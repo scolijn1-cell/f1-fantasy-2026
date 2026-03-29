@@ -1,15 +1,19 @@
 <!DOCTYPE html>
+<!-- F1 Fantasy v3.1 - GitHub Pages Edition - 2026-03-29 -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>F1 Friends Fantasy 2026 🏎️</title>
-
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#000000">
-
+    <title>F1 Friends Fantasy 2026 🏎️</title>
     <script src="https://cdn.tailwindcss.com/3.4.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
@@ -22,20 +26,24 @@
 
         #app { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; background: #18181b; position: relative; overflow: hidden; }
 
+        /* Header */
         #header { flex-shrink: 0; background: #000; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #27272a; }
         #header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; line-height: 1; margin: 0; }
         #header p { font-size: 10px; color: #71717a; margin: 2px 0 0; }
         #refresh-btn { background: #27272a; border: none; color: #fff; border-radius: 20px; padding: 9px 14px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; }
         #refresh-btn:active { background: #3f3f46; }
 
+        /* Tabs */
         #tabs { flex-shrink: 0; display: flex; background: #000; border-bottom: 1px solid #27272a; }
         .tab-btn { flex: 1; padding: 13px 4px; font-size: 11px; font-weight: 600; color: #71717a; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; letter-spacing: 0.2px; }
         .tab-btn.active { color: #e10600; border-bottom-color: #e10600; }
 
+        /* Screens */
         #screens { flex: 1; overflow: hidden; position: relative; }
         .screen { position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px 14px 24px; display: none; }
         .screen.active { display: block; }
 
+        /* Leaderboard */
         .lb-card { background: #27272a; border-radius: 14px; padding: 13px 14px; display: flex; align-items: center; gap: 11px; margin-bottom: 9px; cursor: pointer; }
         .lb-card:active { background: #3f3f46; }
         .lb-rank { width: 38px; height: 38px; background: #3f3f46; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0; }
@@ -43,6 +51,7 @@
         .lb-rank.silver { background: #1f2937; color: #d1d5db; }
         .lb-rank.bronze { background: #7c2d12; color: #fb923c; }
 
+        /* Player list */
         .player-card { background: #27272a; border-radius: 14px; padding: 13px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
         .rename-btn { background: none; border: none; font-size: 20px; cursor: pointer; padding: 2px 4px; flex-shrink: 0; line-height: 1; }
         .player-name { font-size: 16px; font-weight: 600; line-height: 1.2; }
@@ -50,6 +59,7 @@
         .edit-btn { background: #e10600; border: none; color: #fff; border-radius: 10px; padding: 9px 14px; font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
         .edit-btn:active { background: #b91c1c; }
 
+        /* Modal */
         #modal-overlay { position: fixed; inset: 0; z-index: 100; display: none; flex-direction: column; background: #18181b; }
         #modal-overlay.open { display: flex; }
 
@@ -84,22 +94,109 @@
         #save-btn { flex: 2; background: #e10600; border: none; color: #fff; border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; }
         #save-btn:active { background: #b91c1c; }
 
+        /* Toast */
         #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(90px); background: #27272a; border: 1px solid #3f3f46; color: #fff; padding: 11px 20px; border-radius: 20px; font-size: 14px; font-weight: 500; z-index: 200; transition: transform 0.28s ease; white-space: nowrap; pointer-events: none; }
         #toast.show { transform: translateX(-50%) translateY(0); }
 
+        /* Sync status */
         #sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #52525b; display: inline-block; margin-right: 5px; transition: background 0.3s; flex-shrink: 0; }
         #sync-dot.live { background: #16a34a; box-shadow: 0 0 6px #16a34a; }
         #sync-dot.saving { background: #f59e0b; }
         #sync-dot.error { background: #e10600; }
         #sync-label { font-size: 10px; color: #71717a; }
 
+        /* Sync bar */
         #sync-bar { flex-shrink: 0; background: #000; border-bottom: 1px solid #27272a; padding: 5px 16px; display: flex; align-items: center; gap: 6px; }
 
+        
         .action-link:active { color: #fff; }
         .info-bar { background: #27272a; border-radius: 12px; padding: 12px 14px; text-align: center; margin-top: 10px; }
         .info-bar p { font-size: 12px; color: #a1a1aa; margin: 0; }
         .info-bar p + p { margin-top: 4px; color: #71717a; }
 
+        /* Race tab */
+        .race-card { background: #27272a; border-radius: 14px; margin-bottom: 9px; overflow: hidden; }
+        .race-header { display: flex; align-items: center; gap: 11px; padding: 13px 14px; cursor: pointer; }
+        .race-header:active { background: #3f3f46; }
+        .race-flag { font-size: 24px; flex-shrink: 0; }
+        .race-name { font-size: 15px; font-weight: 700; line-height: 1.2; }
+        .race-date { font-size: 11px; color: #71717a; margin-top: 2px; }
+        .race-chevron { margin-left: auto; color: #71717a; font-size: 16px; transition: transform 0.2s; flex-shrink: 0; }
+        .race-card.open .race-chevron { transform: rotate(180deg); }
+        .race-body { display: none; border-top: 1px solid #3f3f46; }
+        .race-card.open .race-body { display: block; }
+        .race-row { display: flex; align-items: center; padding: 10px 14px; border-bottom: 1px solid #3f3f46; }
+        .race-row:last-child { border-bottom: none; }
+        .race-pos { width: 22px; font-size: 12px; color: #71717a; font-weight: 600; flex-shrink: 0; }
+        .race-player { flex: 1; font-size: 14px; font-weight: 600; }
+        .race-pts { font-size: 16px; font-weight: 800; color: #e10600; }
+        .race-pts.zero { color: #52525b; }
+        .race-breakdown { font-size: 11px; color: #71717a; margin-top: 1px; }
+        .loading-races { padding: 40px; text-align: center; color: #71717a; font-size: 14px; }
+
+        /* Countdown banner */
+        #countdown-banner { flex-shrink: 0; background: linear-gradient(90deg,#1a0000,#2d0000); border-bottom: 1px solid #3f0000; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        #countdown-banner:active { background: #1f0000; }
+        .cd-label { font-size: 10px; font-weight: 700; color: #e10600; letter-spacing: 0.8px; text-transform: uppercase; }
+        .cd-race { font-size: 13px; font-weight: 700; color: #fff; margin-top: 1px; }
+        .cd-time { font-size: 20px; font-weight: 800; color: #fff; font-family: 'Roboto Mono', monospace; flex-shrink: 0; }
+        .cd-days { font-size: 10px; color: #a1a1aa; text-align: right; margin-top: 1px; }
+
+        /* Schedule tab */
+        .sched-card { background: #27272a; border-radius: 14px; padding: 13px 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .sched-card.past { opacity: 0.45; }
+        .sched-card.next { border: 1px solid #e10600; background: rgba(225,6,0,0.08); }
+        .sched-flag { font-size: 26px; flex-shrink: 0; width: 36px; text-align: center; }
+        .sched-round { font-size: 10px; color: #71717a; font-weight: 700; }
+        .sched-name { font-size: 14px; font-weight: 700; line-height: 1.3; }
+        .sched-circuit { font-size: 11px; color: #a1a1aa; margin-top: 1px; }
+        .sched-date { text-align: right; flex-shrink: 0; }
+        .sched-date-str { font-size: 12px; font-weight: 600; color: #fff; }
+        .sched-sprint { font-size: 10px; color: #e10600; font-weight: 700; margin-top: 2px; }
+        .sched-done { font-size: 11px; color: #16a34a; font-weight: 700; margin-top: 2px; }
+
+        /* Trades tab */
+        .trade-section-title { font-size: 12px; font-weight: 700; color: #71717a; letter-spacing: 0.8px; text-transform: uppercase; margin: 18px 0 8px; }
+        .trade-card { background: #27272a; border-radius: 14px; padding: 14px; margin-bottom: 9px; }
+        .trade-card.pending { border: 1px solid #854d0e; background: rgba(133,77,14,0.15); }
+        .trade-card.accepted { border: 1px solid #166534; background: rgba(22,101,52,0.12); }
+        .trade-card.declined { border: 1px solid #3f3f46; opacity: 0.5; }
+        .trade-players { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .trade-player-box { flex: 1; background: #18181b; border-radius: 10px; padding: 9px 11px; }
+        .trade-player-box .tpb-name { font-size: 11px; color: #71717a; font-weight: 600; margin-bottom: 3px; }
+        .trade-player-box .tpb-driver { font-size: 14px; font-weight: 700; line-height: 1.3; }
+        .trade-arrow { font-size: 18px; flex-shrink: 0; color: #71717a; }
+        .trade-meta { font-size: 11px; color: #71717a; margin-bottom: 10px; }
+        .trade-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-right: 6px; }
+        .trade-badge.pending { background: #78350f; color: #fbbf24; }
+        .trade-badge.accepted { background: #14532d; color: #86efac; }
+        .trade-badge.declined { background: #27272a; color: #71717a; }
+        .trade-actions { display: flex; gap: 8px; }
+        .trade-btn { flex: 1; padding: 10px; border-radius: 10px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .trade-btn.accept { background: #16a34a; color: #fff; }
+        .trade-btn.accept:active { background: #15803d; }
+        .trade-btn.decline { background: #3f3f46; color: #fff; }
+        .trade-btn.decline:active { background: #52525b; }
+
+        /* Trade propose modal */
+        #trade-modal { position: fixed; inset: 0; z-index: 150; display: none; flex-direction: column; background: #18181b; }
+        #trade-modal.open { display: flex; }
+        .trade-modal-header { flex-shrink: 0; background: #000; padding: 13px 14px; display: flex; align-items: center; gap: 11px; border-bottom: 1px solid #27272a; }
+        .trade-step { flex-shrink: 0; padding: 16px 14px; border-bottom: 1px solid #27272a; }
+        .trade-step-label { font-size: 11px; font-weight: 700; color: #71717a; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 8px; }
+        .trade-picker-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .trade-pick-row { display: flex; align-items: center; gap: 12px; padding: 14px; border-bottom: 1px solid #27272a; cursor: pointer; }
+        .trade-pick-row:active { background: #27272a; }
+        .trade-pick-row.selected { background: rgba(225,6,0,0.10); }
+        .trade-pick-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #52525b; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .trade-pick-row.selected .trade-pick-dot { background: #e10600; border-color: #e10600; }
+        .trade-pick-dot-inner { width: 8px; height: 8px; background: #fff; border-radius: 50%; display: none; }
+        .trade-pick-row.selected .trade-pick-dot-inner { display: block; }
+        .trade-modal-footer { flex-shrink: 0; padding: 12px 14px; background: #000; border-top: 1px solid #27272a; }
+        .trade-next-btn { width: 100%; padding: 14px; background: #e10600; border: none; color: #fff; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; }
+        .trade-next-btn:disabled { background: #3f3f46; color: #71717a; cursor: not-allowed; }
+        .trade-next-btn:not(:disabled):active { background: #b91c1c; }
+        .trade-summary-box { background: #27272a; border-radius: 12px; padding: 14px; margin: 14px; }
         .new-propose-btn { width: 100%; padding: 14px; background: #27272a; border: none; color: #fff; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 4px; border: 1px dashed #52525b; }
         .new-propose-btn:active { background: #3f3f46; }
     </style>
@@ -182,7 +279,7 @@
             </div>
             <div style="margin-top:16px;background:#27272a;border-radius:14px;padding:14px;">
                 <div style="font-size:12px;font-weight:700;color:#16a34a;letter-spacing:0.8px;margin-bottom:6px;">☁️ CLOUD SYNC ACTIVE</div>
-                <div style="font-size:12px;color:#a1a1aa;line-height:1.6;">All changes save automatically to Supabase.</div>
+                <div style="font-size:12px;color:#a1a1aa;line-height:1.6;">All changes save automatically to the cloud and sync live to everyone. No more import/export needed!</div>
             </div>
         </div>
 
@@ -190,133 +287,1554 @@
             <div style="font-size:18px;font-weight:700;margin-bottom:13px;">2026 Calendar</div>
             <div id="schedule-list"></div>
         </div>
+
     </div>
+
 </div>
 
-<!-- Modals (simplified for now) -->
-<div id="modal-overlay" style="display:none;">
-    <div style="background:#000;padding:13px 14px;display:flex;align-items:center;gap:11px;">
-        <button onclick="closeModal()" style="background:#27272a;border:none;color:#fff;border-radius:10px;width:38px;height:38px;font-size:18px;">←</button>
+<!-- FULL-SCREEN EDIT MODAL -->
+<div id="modal-overlay">
+
+    <div id="modal-header">
+        <button id="modal-back" onclick="closeModal()">←</button>
         <div>
-            <div id="modal-title" style="font-size:17px;font-weight:700;">Edit Team</div>
+            <div id="modal-title">Edit Team</div>
+            <div id="modal-subtitle"></div>
         </div>
     </div>
-    <div style="padding:20px;text-align:center;color:#a1a1aa;">Full editing coming soon</div>
+
+    <div id="modal-tabs">
+        <button class="modal-tab active" id="mtab-0" onclick="switchModalTab(0)">
+            DRIVERS &nbsp;<span id="driver-count" style="color:#e10600;">0/5</span>
+        </button>
+        <button class="modal-tab" id="mtab-1" onclick="switchModalTab(1)">
+            CONSTRUCTORS &nbsp;<span id="team-count" style="color:#e10600;">0/2</span>
+        </button>
+    </div>
+
+    <div id="search-wrap">
+        <input id="driver-search" type="search" placeholder="🔍  Search drivers or teams..." oninput="filterList()" autocomplete="off" spellcheck="false">
+    </div>
+
+    <div id="modal-list"></div>
+
+    <div id="modal-footer">
+        <div id="footer-count">0 / 5 drivers</div>
+        <button id="save-btn" onclick="savePlayerSelections()">SAVE TEAM ✓</button>
+    </div>
+
 </div>
 
-<div id="trade-modal" style="display:none;">
-    <div style="background:#000;padding:13px 14px;display:flex;align-items:center;gap:11px;">
-        <button onclick="closeTradeModal()" style="background:#27272a;border:none;color:#fff;border-radius:10px;width:38px;height:38px;font-size:18px;">←</button>
-        <div id="trade-modal-title" style="font-size:17px;font-weight:700;">Propose Trade</div>
+<!-- TRADE PROPOSE MODAL -->
+<div id="trade-modal">
+    <div class="trade-modal-header">
+        <button id="modal-back" style="background:#27272a;border:none;color:#fff;border-radius:10px;width:38px;height:38px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onclick="closeTradeModal()">←</button>
+        <div>
+            <div id="trade-modal-title" style="font-size:17px;font-weight:700;">Propose Trade</div>
+            <div id="trade-modal-sub" style="font-size:12px;color:#71717a;margin-top:2px;">Step 1 of 4</div>
+        </div>
     </div>
-    <div style="padding:20px;text-align:center;color:#a1a1aa;">Trade feature coming soon</div>
+    <div id="trade-modal-body" style="flex:1;display:flex;flex-direction:column;overflow:hidden;"></div>
+    <div class="trade-modal-footer">
+        <button class="trade-next-btn" id="trade-next-btn" onclick="tradeNext()" disabled>Next →</button>
+    </div>
 </div>
+
+
 
 <div id="toast"></div>
 
-<script type="module">
-    const SUPABASE_URL = "https://bnhyybufxbwsgbroehct.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJuaHl5YnVmeGJ3c2dicm9laGN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2OTY4MjksImV4cCI6MjA5MDI3MjgyOX0.viW_k7NET9a6-nXpNOn_M4m_cOl6T9hNTfqaLvNXql8";
-    const DB_ROW_ID = 1;
-
-    let sb = null;
-    let players = [];
-
-    const DEFAULT_PLAYERS = [
-        { name: "Vicky",  driversIds: ["oscar_piastri", "nico_hulkenberg", "alexander_albon", "esteban_ocon", "lando_norris"], teamsIds: ["mclaren", "audi"] },
-        { name: "Dan",    driversIds: ["isack_hadjar", "fernando_alonso", "gabriel_bortoleto", "andrea_kimi_antonelli", "arvid_lindblad"], teamsIds: ["rb", "ferrari"] },
-        { name: "Damian", driversIds: ["lewis_hamilton", "oliver_bearman", "max_verstappen", "pierre_gasly", "sergio_perez"], teamsIds: ["haas", "red_bull"] },
-        { name: "Sanne",  driversIds: ["george_russell", "valtteri_bottas", "liam_lawson", "franco_colapinto", "carlos_sainz"], teamsIds: ["mercedes", "williams"] },
-        { name: "Kids",   driversIds: ["lance_stroll", "charles_leclerc"], teamsIds: ["aston_martin", "alpine", "cadillac"] }
-    ];
-
-    async function initSupabase() {
-        try {
-            const { createClient } = await import("https://cdn.skypack.dev/@supabase/supabase-js@2");
-            sb = createClient(SUPABASE_URL, SUPABASE_KEY);
-            return true;
-        } catch (e) {
-            console.error(e);
-            return false;
-        }
-    }
-
-    async function loadFromSupabase() {
-        if (!sb) return false;
-        try {
-            const { data, error } = await sb.from("fantasy_data").select("players").eq("id", DB_ROW_ID).single();
-            if (error) throw error;
-            players = data && data.players && data.players.length === 5 ? data.players : DEFAULT_PLAYERS;
-            return true;
-        } catch (e) {
-            console.error(e);
-            players = DEFAULT_PLAYERS;
-            return false;
-        }
-    }
+<script>
+    // ── SUPABASE SETUP ────────────────────────────────────────────────────────
+    const SUPABASE_URL = "https://bnhyybufxbwsgbroehct.supabase.co"
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJuaHl5YnVmeGJ3c2dicm9laGN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2OTY4MjksImV4cCI6MjA5MDI3MjgyOX0.viW_k7NET9a6-nXpNOn_M4m_cOl6T9hNTfqaLvNXql8"
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    const DB_ROW_ID = 1   // We use a single row in fantasy_data
 
     function setSyncStatus(status, text) {
-        const dot = document.getElementById("sync-dot");
-        const lbl = document.getElementById("sync-label");
-        if (dot) dot.className = status;
-        if (lbl) lbl.textContent = text;
+        const dot = document.getElementById("sync-dot")
+        const lbl = document.getElementById("sync-label")
+        dot.className = ""
+        dot.classList.add(status)
+        lbl.textContent = text
     }
 
-    function renderEverything() {
-        const lb = document.getElementById("leaderboard");
-        if (lb) {
-            lb.innerHTML = `<div style="padding:30px;text-align:center;color:#fff;">
-                <strong>5 teams loaded from Supabase</strong><br><br>
-                Tap REFRESH to update
-            </div>`;
+    // ── Load from Supabase ────────────────────────────────────────────────────
+    async function loadFromSupabase() {
+        try {
+            const { data, error } = await sb
+                .from("fantasy_data")
+                .select("players, trades")
+                .eq("id", DB_ROW_ID)
+                .single()
+            if (error) throw error
+            if (data) {
+                if (data.players && data.players.length === 5) {
+                    players = data.players
+                    normaliseIds()
+                }
+                trades = data.trades || []
+            }
+            setSyncStatus("live", "Live — synced")
+            return true
+        } catch(e) {
+            const msg = e && e.message ? e.message : String(e)
+            if (!msg.includes("DataCloneError") && !msg.includes("Failed to fetch") && !msg.includes("NetworkError")) {
+                console.warn("Supabase load failed:", msg)
+            }
+            setSyncStatus("error", "Offline — using local data")
+            loadData()
+            loadTrades()
+            return false
         }
     }
 
-    function refreshData() {
-        setSyncStatus("saving", "Refreshing...");
-        loadFromSupabase().then(success => {
-            renderEverything();
-            setSyncStatus("live", "Live — synced");
-        });
+    // ── Save to Supabase ──────────────────────────────────────────────────────
+    async function saveToSupabase() {
+        // Always save to localStorage first as reliable fallback
+        try { localStorage.setItem("f1Fantasy2026", JSON.stringify({ players })) } catch {}
+        try { localStorage.setItem("f1Fantasy2026_trades", JSON.stringify(trades)) } catch {}
+
+        setSyncStatus("saving", "Saving...")
+        normaliseIds()
+        try {
+            const { error } = await sb
+                .from("fantasy_data")
+                .upsert(
+                    { id: DB_ROW_ID, players: players, trades: trades, updated_at: new Date().toISOString() },
+                    { onConflict: "id" }
+                )
+            if (error) throw new Error(error.message || JSON.stringify(error))
+            setSyncStatus("live", "Saved \u2713")
+        } catch(e) {
+            // Silently handle sandbox/network errors (DataCloneError, Failed to fetch, etc.)
+            // Data is already safe in localStorage above
+            const msg = e && e.message ? e.message : String(e)
+            if (msg.includes("DataCloneError") || msg.includes("Failed to fetch") || msg.includes("NetworkError")) {
+                setSyncStatus("error", "Offline — saved locally")
+            } else {
+                console.warn("Supabase save failed:", msg)
+                setSyncStatus("error", "Save failed — using local backup")
+            }
+        }
     }
 
+    // ── Real-time subscription ────────────────────────────────────────────────
+    function subscribeToRealtime() {
+        sb
+            .channel("fantasy_data_changes")
+            .on("postgres_changes", {
+                event: "UPDATE",
+                schema: "public",
+                table: "fantasy_data",
+                filter: `id=eq.${DB_ROW_ID}`
+            }, (payload) => {
+                console.log("Real-time update received")
+                const newData = payload.new
+                if (newData.players && newData.players.length === 5) {
+                    players = newData.players
+                    normaliseIds()
+                }
+                trades = newData.trades || []
+                renderEverything()
+                renderTradeTab()
+                setSyncStatus("live", "Live — just updated 🔄")
+                setTimeout(() => setSyncStatus("live", "Live — synced"), 2000)
+            })
+            .subscribe((status) => {
+                if (status === "SUBSCRIBED") {
+                    setSyncStatus("live", "Live — synced")
+                } else if (status === "CLOSED" || status === "CHANNEL_ERROR") {
+                    setSyncStatus("error", "Reconnecting...")
+                }
+            })
+    }
+
+    // ── GLOBAL STATE ──────────────────────────────────────────────────────────
+    let driversData = {}, constructorsData = {}
+    let allDriversList = [], allConstructorsList = []
+    let players = []
+    let currentEditingPlayerIndex = -1
+    let currentModalTab = 0
+
+    const DEFAULT_PLAYER_NAMES = ["Vicky", "Dan", "Damian", "Sanne", "Kids"]
+
+    const DEFAULT_PLAYERS = [
+        { name: "Vicky",  driversIds: ["oscar_piastri",   "nico_hulkenberg", "alexander_albon", "esteban_ocon",    "lando_norris"],   teamsIds: ["mclaren", "audi"]              },
+        { name: "Dan",    driversIds: ["isack_hadjar",    "fernando_alonso", "gabriel_bortoleto","andrea_kimi_antonelli","arvid_lindblad"], teamsIds: ["rb",  "ferrari"]         },
+        { name: "Damian", driversIds: ["lewis_hamilton",  "oliver_bearman",  "max_verstappen",  "pierre_gasly",    "sergio_perez"],   teamsIds: ["haas",    "red_bull"]          },
+        { name: "Sanne",  driversIds: ["george_russell",  "valtteri_bottas", "liam_lawson",     "franco_colapinto","carlos_sainz"],   teamsIds: ["mercedes","williams"]           },
+        { name: "Kids",   driversIds: ["lance_stroll",    "charles_leclerc"],                                                          teamsIds: ["aston_martin","alpine","cadillac"] },
+    ]
+
+    // Seed localStorage with default data if it was wiped
+    function seedDefaultData() {
+        try {
+            const saved = localStorage.getItem("f1Fantasy2026")
+            if (!saved) {
+                localStorage.setItem("f1Fantasy2026", JSON.stringify({ players: DEFAULT_PLAYERS }))
+                console.log("Seeded default player data")
+            }
+        } catch(e) {}
+    }
+
+    // Force reset to defaults (used when data is corrupt or missing)
+    function resetToDefaults() {
+        if (confirm("Reset all teams to defaults? This cannot be undone.")) {
+            players = JSON.parse(JSON.stringify(DEFAULT_PLAYERS))
+            trades = []
+            normaliseIds()
+            saveToSupabase()
+            try { localStorage.removeItem("f1Fantasy2026") } catch {}
+            try { localStorage.removeItem("f1Fantasy2026_trades") } catch {}
+            renderEverything()
+            renderTradeTab()
+            showToast("Teams reset to defaults ✓")
+        }
+    }
+
+        function loadData() {
+        try {
+            const saved = localStorage.getItem("f1Fantasy2026")
+            if (saved) { players = JSON.parse(saved).players || DEFAULT_PLAYERS }
+            else { players = DEFAULT_PLAYERS }
+        } catch { players = DEFAULT_PLAYERS }
+        normaliseIds()
+    }
+
+    const ID_MAP = {
+        "norris":"lando_norris","lando":"lando_norris",
+        "piastri":"oscar_piastri","oscar":"oscar_piastri",
+        "russell":"george_russell","george":"george_russell",
+        "hamilton":"lewis_hamilton","lewis":"lewis_hamilton",
+        "leclerc":"charles_leclerc","charles":"charles_leclerc",
+        "verstappen":"max_verstappen","max":"max_verstappen",
+        "antonelli":"andrea_kimi_antonelli","kimi":"andrea_kimi_antonelli",
+        "alonso":"fernando_alonso","fernando":"fernando_alonso",
+        "sainz":"carlos_sainz","carlos":"carlos_sainz",
+        "albon":"alexander_albon","alex":"alexander_albon",
+        "stroll":"lance_stroll","lance":"lance_stroll",
+        "gasly":"pierre_gasly","pierre":"pierre_gasly",
+        "ocon":"esteban_ocon","esteban":"esteban_ocon",
+        "bearman":"oliver_bearman","oliver":"oliver_bearman",
+        "bottas":"valtteri_bottas","valtteri":"valtteri_bottas",
+        "hulkenberg":"nico_hulkenberg","nico":"nico_hulkenberg",
+        "bortoleto":"gabriel_bortoleto","gabriel":"gabriel_bortoleto",
+        "lawson":"liam_lawson","liam":"liam_lawson",
+        "lindblad":"arvid_lindblad","arvid":"arvid_lindblad",
+        "hadjar":"isack_hadjar","isack":"isack_hadjar",
+        "colapinto":"franco_colapinto","franco":"franco_colapinto",
+        "perez":"sergio_perez","sergio":"sergio_perez",
+        "doohan":"jack_doohan","jack":"jack_doohan",
+        "rb_f1_team":"rb","racing_bulls":"rb",
+        "haas_f1_team":"haas","alpine_f1_team":"alpine",
+    }
+
+    function normaliseIds() {
+        players.forEach(function(p) {
+            p.driversIds = p.driversIds.map(function(id){ return ID_MAP[id]||id })
+            p.teamsIds   = p.teamsIds.map(function(id){   return ID_MAP[id]||id })
+        })
+    }
+
+    function saveToStorage() {
+        normaliseIds()
+        // Save to localStorage as immediate backup
+        try { localStorage.setItem("f1Fantasy2026", JSON.stringify({ players })) } catch {}
+        // Save to Supabase (async, non-blocking)
+        saveToSupabase()
+    }
+
+    const FALLBACK_DRIVERS = [
+        // Cumulative points after Round 3 (AUS + CHN incl. sprint + JPN)
+        // Mercedes
+        { id: "andrea_kimi_antonelli", name: "Kimi Antonelli",    team: "Mercedes",        points: 73 },
+        { id: "george_russell",        name: "George Russell",    team: "Mercedes",        points: 63 },
+        // Ferrari
+        { id: "charles_leclerc",       name: "Charles Leclerc",   team: "Ferrari",         points: 49 },
+        { id: "lewis_hamilton",        name: "Lewis Hamilton",    team: "Ferrari",         points: 41 },
+        // McLaren
+        { id: "lando_norris",          name: "Lando Norris",      team: "McLaren",         points: 25 },
+        { id: "oscar_piastri",         name: "Oscar Piastri",     team: "McLaren",         points: 21 },
+        // Haas
+        { id: "oliver_bearman",        name: "Oliver Bearman",    team: "Haas",            points: 17 },
+        // Alpine
+        { id: "pierre_gasly",          name: "Pierre Gasly",      team: "Alpine",          points: 16 },
+        { id: "esteban_ocon",          name: "Esteban Ocon",      team: "Alpine",          points: 2 },
+        { id: "franco_colapinto",      name: "Franco Colapinto",  team: "Alpine",          points: 1 },
+        // Red Bull Racing
+        { id: "max_verstappen",        name: "Max Verstappen",    team: "Red Bull Racing", points: 15 },
+        { id: "isack_hadjar",          name: "Isack Hadjar",      team: "Red Bull Racing", points: 4 },
+        // Racing Bulls
+        { id: "liam_lawson",           name: "Liam Lawson",       team: "Racing Bulls",    points: 12 },
+        { id: "arvid_lindblad",        name: "Arvid Lindblad",    team: "Racing Bulls",    points: 4 },
+        // Audi
+        { id: "nico_hulkenberg",       name: "Nico Hülkenberg",   team: "Audi",            points: 0 },
+        { id: "gabriel_bortoleto",     name: "Gabriel Bortoleto", team: "Audi",            points: 2 },
+        // Williams
+        { id: "carlos_sainz",          name: "Carlos Sainz",      team: "Williams",        points: 2 },
+        { id: "alexander_albon",       name: "Alexander Albon",   team: "Williams",        points: 0 },
+        // Aston Martin
+        { id: "fernando_alonso",       name: "Fernando Alonso",   team: "Aston Martin",    points: 0 },
+        { id: "lance_stroll",          name: "Lance Stroll",      team: "Aston Martin",    points: 0 },
+        // Cadillac
+        { id: "sergio_perez",          name: "Sergio Pérez",      team: "Cadillac",        points: 0 },
+        { id: "valtteri_bottas",       name: "Valtteri Bottas",   team: "Cadillac",        points: 0 },
+    ]
+    const FALLBACK_CONSTRUCTORS = [
+        // Cumulative points after Round 3 (AUS + CHN incl. sprint + JPN)
+        { id: "mercedes",     name: "Mercedes",        points: 136 },
+        { id: "ferrari",      name: "Ferrari",         points: 90 },
+        { id: "mclaren",      name: "McLaren",         points: 46 },
+        { id: "rb",           name: "Racing Bulls",    points: 20 },
+        { id: "red_bull",     name: "Red Bull Racing", points: 19 },
+        { id: "alpine",       name: "Alpine",          points: 19 },
+        { id: "haas",         name: "Haas",            points: 17 },
+        { id: "audi",         name: "Audi",            points: 2 },
+        { id: "williams",     name: "Williams",        points: 2 },
+        { id: "aston_martin", name: "Aston Martin",    points: 0 },
+        { id: "cadillac",     name: "Cadillac",        points: 0 },
+    ]
+
+    function loadFallbackData() {
+        driversData = {}; allDriversList = []
+        FALLBACK_DRIVERS.forEach(d => { driversData[d.id] = { name: d.name, points: d.points, team: d.team }; allDriversList.push({...d}) })
+        constructorsData = {}; allConstructorsList = []
+        FALLBACK_CONSTRUCTORS.forEach(c => { constructorsData[c.id] = { name: c.name, points: c.points }; allConstructorsList.push({...c}) })
+    }
+
+    async function fetchF1Data() {
+        document.getElementById("refresh-text").textContent = "LOADING..."
+        loadFallbackData()
+        try {
+            const [dr, cr] = await Promise.all([
+                fetch("https://api.jolpi.ca/ergast/f1/current/driverstandings/"),
+                fetch("https://api.jolpi.ca/ergast/f1/current/constructorstandings/")
+            ])
+            if (!dr.ok || !cr.ok) throw new Error()
+            const dj = await dr.json(), cj = await cr.json()
+            const dsl = dj.MRData?.StandingsTable?.StandingsLists || []
+            const csl = cj.MRData?.StandingsTable?.StandingsLists || []
+            if (dsl.length && (dsl[0].DriverStandings||[]).length) {
+                driversData = {}; allDriversList = []
+                dsl[0].DriverStandings.forEach(item => {
+                    const d = item.Driver, id = d.driverId
+                    const name = d.givenName + " " + d.familyName
+                    const pts = parseFloat(item.points)||0
+                    const team = item.Constructors[0]?.name||"Unknown"
+                    driversData[id] = { name, points: pts, team }
+                    allDriversList.push({ id, name, points: pts, team })
+                })
+                constructorsData = {}; allConstructorsList = []
+                ;(csl[0]?.ConstructorStandings||[]).forEach(item => {
+                    const c = item.Constructor, id = c.constructorId, pts = parseFloat(item.points)||0
+                    constructorsData[id] = { name: c.name, points: pts }
+                    allConstructorsList.push({ id, name: c.name, points: pts })
+                })
+                allDriversList.sort((a,b)=>b.points-a.points)
+                allConstructorsList.sort((a,b)=>b.points-a.points)
+                document.getElementById("last-updated").textContent = new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})
+                showToast("Live data updated ✓")
+            } else {
+                document.getElementById("last-updated").textContent = "Pre-season"
+                showToast("2026 roster loaded — season not started")
+            }
+        } catch {
+            document.getElementById("last-updated").textContent = "Offline"
+            showToast("Offline — showing 2026 roster")
+        }
+        document.getElementById("refresh-text").textContent = "REFRESH"
+        renderEverything()
+    }
+
+    function calcScore(i) {
+        return calcDetailedScore(i).total
+    }
+
+    function calcDetailedScore(i) {
+        const races = RACE_RESULTS  // Always use hardcoded results for scoring; latestRaces is display-only
+        let driverPts = 0, constructorPts = 0, bonusPts = 0
+        const p = players[i]
+        races.forEach(function(race) {
+            let driversIds = p.driversIds.map(function(id){ return ID_MAP[id]||id })
+            let teamsIds   = p.teamsIds.map(function(id){   return ID_MAP[id]||id })
+            // Apply accepted trades
+            if (trades && trades.length > 0) {
+                trades.filter(function(t){ return t.status==="accepted" && t.roundAfter!=null }).forEach(function(t) {
+                    if (race.round <= t.roundAfter) {
+                        if (t.fromPlayer===p.name && t.fromPlayerRosterBefore) {
+                            driversIds = t.fromPlayerRosterBefore.driversIds.map(function(id){ return ID_MAP[id]||id })
+                            teamsIds   = t.fromPlayerRosterBefore.teamsIds.map(function(id){   return ID_MAP[id]||id })
+                        }
+                        if (t.toPlayer===p.name && t.toPlayerRosterBefore) {
+                            driversIds = t.toPlayerRosterBefore.driversIds.map(function(id){ return ID_MAP[id]||id })
+                            teamsIds   = t.toPlayerRosterBefore.teamsIds.map(function(id){   return ID_MAP[id]||id })
+                        }
+                    }
+                })
+            }
+            driversIds.forEach(function(nid) {
+                const racePts   = race.drivers[nid] || 0
+                const sprintPts = (race.sprintDrivers || {})[nid] || 0
+                // Fastest lap = 1 bonus pt, already baked into racePts
+                const isFastest = race.fastestLap === nid
+                const fl = isFastest ? 1 : 0
+                driverPts += racePts + sprintPts - fl
+                bonusPts  += fl
+            })
+            teamsIds.forEach(function(nid) {
+                constructorPts += (race.constructors[nid] || 0) + ((race.sprintConstructors || {})[nid] || 0)
+            })
+        })
+        return { driverPts: Math.round(driverPts), constructorPts: Math.round(constructorPts), bonusPts: Math.round(bonusPts), total: Math.round(driverPts + constructorPts + bonusPts) }
+    }
+
+    function renderLeaderboard() {
+        const el = document.getElementById("leaderboard"); el.innerHTML = ""
+        const ranked = players.map((p,i) => {
+            const d = calcDetailedScore(i)
+            return { i, name: p.name, score: d.total, driverPts: d.driverPts, constructorPts: d.constructorPts, bonusPts: d.bonusPts }
+        }).sort((a,b)=>b.score-a.score)
+        const CNAMES = {"rb":"Racing Bulls","haas":"Haas","alpine":"Alpine","aston_martin":"Aston Martin","red_bull":"Red Bull","mclaren":"McLaren","mercedes":"Mercedes","ferrari":"Ferrari","williams":"Williams","audi":"Audi","cadillac":"Cadillac"}
+        const pillStyle = "display:inline-flex;align-items:center;gap:3px;background:#3f3f46;border-radius:6px;padding:3px 7px;font-size:10px;font-weight:700;white-space:nowrap;"
+        ranked.forEach(function(item, rank) {
+            var i = item.i, name = item.name, score = item.score, driverPts = item.driverPts, constructorPts = item.constructorPts, bonusPts = item.bonusPts
+            var p = players[i]
+            var rc = rank===0?"gold":rank===1?"silver":rank===2?"bronze":""
+            var medal = rank===0?"🥇":rank===1?"🥈":rank===2?"🥉":String(rank+1)
+            var driverNames = p.driversIds.map(function(id) {
+                var nid = ID_MAP[id]||id
+                var fd = FALLBACK_DRIVERS.find(function(f){ return f.id===nid })
+                return fd ? fd.name.split(" ").pop() : nid.split("_").map(function(w){ return w[0].toUpperCase()+w.slice(1) }).join(" ")
+            }).join(" · ")
+            var teamNames = p.teamsIds.map(function(id) {
+                var nid = ID_MAP[id]||id
+                return CNAMES[nid] || nid
+            }).join(" · ")
+            var bonusPill = bonusPts > 0 ? "<span style=\"" + pillStyle + "\"><span style=\"color:#a1a1aa;\">⚡</span><span style=\"color:#fbbf24;\">" + bonusPts + "</span></span>" : ""
+            var div = document.createElement("div")
+            div.className = "lb-card"
+            div.style.alignItems = "flex-start"
+            div.innerHTML =
+                "<div class=\"lb-rank " + rc + "\" style=\"margin-top:2px;\">" + medal + "</div>" +
+                "<div style=\"flex:1;min-width:0;\">" +
+                    "<div style=\"font-size:16px;font-weight:700;\">" + name + "</div>" +
+                    "<div style=\"font-size:11px;color:#a1a1aa;margin-top:3px;line-height:1.5;\">" + driverNames + "</div>" +
+                    "<div style=\"font-size:11px;color:#71717a;margin-top:1px;\">" + teamNames + "</div>" +
+                    "<div style=\"display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;\">" +
+                        "<span style=\"" + pillStyle + "\"><span style=\"color:#a1a1aa;\">🏎️</span><span style=\"color:#fff;\">" + driverPts + "</span></span>" +
+                        "<span style=\"" + pillStyle + "\"><span style=\"color:#a1a1aa;\">🏭</span><span style=\"color:#fff;\">" + constructorPts + "</span></span>" +
+                        bonusPill +
+                    "</div>" +
+                "</div>" +
+                "<div style=\"text-align:right;flex-shrink:0;margin-top:2px;\">" +
+                    "<div class=\"mono\" style=\"font-size:30px;font-weight:800;line-height:1;\">" + score + "</div>" +
+                    "<div style=\"font-size:10px;color:#71717a;\">TOTAL</div>" +
+                "</div>"
+            div.addEventListener("click", function() { showPlayerBreakdown(i) })
+            el.appendChild(div)
+        })
+    }
+
+    function showPlayerBreakdown(index) {
+        const p = players[index]
+        const overlay = document.createElement("div")
+        overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;display:flex;flex-direction:column;overflow:hidden;"
+        const hdr = document.createElement("div")
+        hdr.style.cssText = "background:#000;padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #27272a;flex-shrink:0;"
+        hdr.innerHTML = "<button id='overlay-back-btn' style='background:#27272a;border:none;color:#fff;border-radius:10px;width:38px;height:38px;font-size:18px;cursor:pointer;flex-shrink:0;'>&#8592;</button><div style='font-size:17px;font-weight:700;'>" + p.name + "'s Team</div>"
+        hdr.querySelector('#overlay-back-btn').onclick = function() { overlay.remove() }
+        overlay.appendChild(hdr)
+        const body = document.createElement("div")
+        body.style.cssText = "flex:1;overflow-y:auto;padding:16px;"
+        const total = calcScore(index)
+        body.innerHTML += "<div style='background:#27272a;border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;'><span style='font-size:15px;font-weight:700;'>Total Points</span><span style='font-size:32px;font-weight:800;font-family:monospace;color:#e10600;'>" + total + "</span></div>"
+        body.innerHTML += "<div style='font-size:11px;font-weight:700;color:#71717a;letter-spacing:0.8px;margin-bottom:8px;'>DRIVERS</div>"
+        const driverBox = document.createElement("div")
+        driverBox.style.cssText = "background:#27272a;border-radius:14px;overflow:hidden;margin-bottom:14px;"
+        // Build name lookup from FALLBACK_DRIVERS (always available)
+        var driverNameMap = {}
+        FALLBACK_DRIVERS.forEach(function(fd) { driverNameMap[fd.id] = { name: fd.name, team: fd.team } })
+        p.driversIds.forEach(function(id) {
+            const nid = ID_MAP[id]||id
+            const d = driversData[nid] || driverNameMap[nid]
+            var driverPts = 0
+            RACE_RESULTS.forEach(function(race) {
+                driverPts += (race.drivers[nid]||0) + ((race.sprintDrivers||{})[nid]||0)
+            })
+            const dName = d ? d.name : nid.split("_").map(function(w){ return w[0].toUpperCase()+w.slice(1) }).join(" ")
+            const dTeam = d ? d.team : ""
+            const row = document.createElement("div")
+            row.style.cssText = "display:flex;align-items:center;padding:12px 14px;border-bottom:1px solid #3f3f46;"
+            row.innerHTML = "<div style='flex:1;'><div style='font-size:14px;font-weight:600;'>" + dName + "</div><div style='font-size:11px;color:#a1a1aa;margin-top:2px;'>" + dTeam + "</div></div><div style='font-size:16px;font-weight:800;color:#e10600;font-family:monospace;'>" + driverPts + "<span style='font-size:10px;color:#71717a;margin-left:2px;'>pts</span></div>"
+            driverBox.appendChild(row)
+        })
+                body.appendChild(driverBox)
+        body.innerHTML += "<div style='font-size:11px;font-weight:700;color:#71717a;letter-spacing:0.8px;margin-bottom:8px;'>CONSTRUCTORS</div>"
+        const teamBox = document.createElement("div")
+        teamBox.style.cssText = "background:#27272a;border-radius:14px;overflow:hidden;margin-bottom:14px;"
+        p.teamsIds.forEach(function(id) {
+            const nid = ID_MAP[id]||id
+            const CNAMES = {"rb":"Racing Bulls","haas":"Haas","alpine":"Alpine","aston_martin":"Aston Martin","red_bull":"Red Bull","mclaren":"McLaren","mercedes":"Mercedes","ferrari":"Ferrari","williams":"Williams","audi":"Audi","cadillac":"Cadillac"}
+            const cName = CNAMES[nid] || (constructorsData[nid]?constructorsData[nid].name:nid)
+            var cPts = 0
+            RACE_RESULTS.forEach(function(race) {
+                cPts += (race.constructors[nid]||0) + ((race.sprintConstructors||{})[nid]||0)
+            })
+            const row = document.createElement("div")
+            row.style.cssText = "display:flex;align-items:center;padding:12px 14px;border-bottom:1px solid #3f3f46;"
+            row.innerHTML = "<div style='flex:1;font-size:14px;font-weight:600;'>" + cName + "</div><div style='font-size:16px;font-weight:800;color:#e10600;font-family:monospace;'>" + cPts + "<span style='font-size:10px;color:#71717a;margin-left:2px;'>pts</span></div>"
+            teamBox.appendChild(row)
+        })
+                body.appendChild(teamBox)
+        overlay.appendChild(body)
+        document.body.appendChild(overlay)
+    }
+
+    function renderPlayerList() {
+        const el = document.getElementById("player-list"); el.innerHTML = ""
+        players.forEach((player, i) => {
+            const score = calcScore(i)
+            const div = document.createElement("div"); div.className = "player-card"
+            div.innerHTML = `
+                <button class="rename-btn" onclick="renamePlayer(${i})">✏️</button>
+                <div style="flex:1;min-width:0;">
+                    <div class="player-name">${player.name}</div>
+                    <div class="player-meta">${player.driversIds.length}/${player.name==="Kids"?2:5} drivers · ${player.teamsIds.length}/${player.name==="Kids"?3:2} constructors</div>
+                </div>
+                <div class="mono" style="font-size:24px;font-weight:800;flex-shrink:0;margin-right:4px;">${score}</div>
+                <button class="edit-btn" onclick="editPlayer(${i})">EDIT</button>`
+            el.appendChild(div)
+        })
+    }
+
+    function renderEverything() { renderLeaderboard(); renderPlayerList() }
+
     function switchTab(tab) {
-        document.querySelectorAll(".tab-btn").forEach((b,i) => b.classList.toggle("active", i===tab));
-        document.querySelectorAll(".screen").forEach((s,i) => s.classList.toggle("active", i===tab));
+        document.querySelectorAll(".tab-btn").forEach((b,i) => b.classList.toggle("active", i===tab))
+        document.querySelectorAll(".screen").forEach((s,i) => s.classList.toggle("active", i===tab))
+    }
+
+    function editPlayer(index) {
+        currentEditingPlayerIndex = index
+        const player = players[index]
+        document.getElementById("modal-title").textContent = player.name + "'s Team"
+        const lim = getLimits(index)
+        document.getElementById("modal-subtitle").textContent = "Pick " + lim.maxDrivers + " drivers & " + lim.maxTeams + " constructors"
+        document.getElementById("driver-search").value = ""
+        switchModalTab(0)
+        document.getElementById("modal-overlay").classList.add("open")
     }
 
     function closeModal() {
-        document.getElementById("modal-overlay").style.display = "none";
+        document.getElementById("modal-overlay").classList.remove("open")
     }
 
+    function switchModalTab(tab) {
+        currentModalTab = tab
+        document.querySelectorAll(".modal-tab").forEach((b,i) => b.classList.toggle("active", i===tab))
+        document.getElementById("search-wrap").style.display = tab===0 ? "block" : "none"
+        document.getElementById("driver-search").value = ""
+        renderModalList()
+        updateCounts()
+    }
+
+    function filterList() { renderModalList() }
+
+    const CHECK_SVG = `<svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+
+    function renderModalList() {
+        const container = document.getElementById("modal-list"); container.innerHTML = ""
+        const player = players[currentEditingPlayerIndex]
+        const term = document.getElementById("driver-search").value.toLowerCase().trim()
+
+        if (currentModalTab === 0) {
+            let list = allDriversList
+            if (term) list = list.filter(d => d.name.toLowerCase().includes(term) || d.team.toLowerCase().includes(term))
+            if (!list.length) {
+                container.innerHTML = `<div style="padding:36px;text-align:center;color:#71717a;font-size:15px;">No drivers found</div>`
+                return
+            }
+            list.forEach(driver => {
+                const sel = player.driversIds.includes(driver.id)
+                const row = document.createElement("div"); row.className = "sel-row" + (sel?" selected":"")
+                row.innerHTML = `
+                    <div class="sel-check">${CHECK_SVG}</div>
+                    <div style="flex:1;min-width:0;">
+                        <div class="sel-name">${driver.name}</div>
+                        <div class="sel-team">${driver.team}</div>
+                    </div>
+                    <div class="sel-pts mono">${driver.points > 0 ? driver.points+'pts' : '—'}</div>`
+                row.addEventListener("click", () => toggleDriver(driver.id))
+                container.appendChild(row)
+            })
+        } else {
+            allConstructorsList.forEach(team => {
+                const sel = player.teamsIds.includes(team.id)
+                const row = document.createElement("div"); row.className = "sel-row" + (sel?" selected":"")
+                row.innerHTML = `
+                    <div class="sel-check">${CHECK_SVG}</div>
+                    <div style="flex:1;min-width:0;">
+                        <div class="sel-name">${team.name}</div>
+                    </div>
+                    <div class="sel-pts mono">${team.points > 0 ? team.points+'pts' : '—'}</div>`
+                row.addEventListener("click", () => toggleTeam(team.id))
+                container.appendChild(row)
+            })
+        }
+    }
+
+    function toggleDriver(id) {
+        const player = players[currentEditingPlayerIndex]
+        if (player.driversIds.includes(id)) {
+            player.driversIds = player.driversIds.filter(x => x !== id)
+        } else {
+            if (player.driversIds.length >= getLimits(currentEditingPlayerIndex).maxDrivers) { showToast("Max " + getLimits(currentEditingPlayerIndex).maxDrivers + " drivers — deselect one first"); return }
+            player.driversIds.push(id)
+        }
+        renderModalList(); updateCounts()
+    }
+
+    function toggleTeam(id) {
+        const player = players[currentEditingPlayerIndex]
+        if (player.teamsIds.includes(id)) {
+            player.teamsIds = player.teamsIds.filter(x => x !== id)
+        } else {
+            if (player.teamsIds.length >= getLimits(currentEditingPlayerIndex).maxTeams) { showToast("Max " + getLimits(currentEditingPlayerIndex).maxTeams + " constructors — deselect one first"); return }
+            player.teamsIds.push(id)
+        }
+        renderModalList(); updateCounts()
+    }
+
+    function updateCounts() {
+        const p = players[currentEditingPlayerIndex]
+        const dc = p.driversIds.length, tc = p.teamsIds.length
+        const lim2 = getLimits(currentEditingPlayerIndex)
+        document.getElementById("driver-count").textContent = dc + "/" + lim2.maxDrivers
+        document.getElementById("team-count").textContent = tc + "/" + lim2.maxTeams
+        document.getElementById("footer-count").textContent = currentModalTab===0 ? dc+" / "+lim2.maxDrivers+" drivers" : tc+" / "+lim2.maxTeams+" constructors"
+    }
+
+    function savePlayerSelections() {
+        const p = players[currentEditingPlayerIndex]
+        const lim3 = getLimits(currentEditingPlayerIndex)
+        if (p.driversIds.length !== lim3.maxDrivers) { showToast("Need exactly "+lim3.maxDrivers+" drivers ("+p.driversIds.length+"/"+lim3.maxDrivers+")"); switchModalTab(0); return }
+        if (p.teamsIds.length !== lim3.maxTeams) { showToast("Need exactly "+lim3.maxTeams+" constructors ("+p.teamsIds.length+"/"+lim3.maxTeams+")"); switchModalTab(1); return }
+        closeModal(); saveToStorage(); renderEverything(); showToast("Team saved ✓")
+    }
+
+    function renamePlayer(index) {
+        const n = prompt("Rename friend:", players[index].name)
+        if (n && n.trim()) { players[index].name = n.trim(); saveToStorage(); renderEverything() }
+    }
+
+    let toastTimer
+    function showToast(msg) {
+        const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("show")
+        clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2500)
+    }
+
+    // Export/import replaced by Supabase real-time sync
+    function exportData() { showToast("☁️ Data syncs automatically — no export needed!") }
+    function importData() { showToast("☁️ Data syncs automatically — no import needed!") }
+
+    // quickImport replaced by Supabase
+    function quickImport() { showToast("☁️ Data syncs automatically — no import needed!") }
+
+    function refreshData() { fetchF1Data(); fetchRaceData() }
+
+    // ── Race-by-race data ─────────────────────────────────────────────────────
+    // Hardcoded race results: driverId → points earned that race
+    const RACE_RESULTS = [
+        {
+            round: 1,
+            name: "Australian Grand Prix",
+            flag: "🇦🇺",
+            date: "8 Mar 2026",
+            drivers: {
+                george_russell: 25, andrea_kimi_antonelli: 18, charles_leclerc: 15,
+                lewis_hamilton: 12, lando_norris: 10, max_verstappen: 9,
+                oliver_bearman: 6, arvid_lindblad: 4, gabriel_bortoleto: 2, pierre_gasly: 1
+            },
+            constructors: {
+                mercedes: 43, ferrari: 27, mclaren: 10, red_bull: 9,
+                haas: 6, rb: 4, audi: 2, alpine: 1
+            },
+            fastestLap: "max_verstappen",
+            sprintDrivers: {},
+            sprintConstructors: {}
+        },
+        {
+            round: 2,
+            name: "Chinese Grand Prix",
+            flag: "🇨🇳",
+            date: "15 Mar 2026",
+            drivers: {
+                andrea_kimi_antonelli: 26, george_russell: 18, lewis_hamilton: 15,
+                charles_leclerc: 12, oliver_bearman: 10, pierre_gasly: 8,
+                liam_lawson: 6, isack_hadjar: 4, carlos_sainz: 2, franco_colapinto: 1
+            },
+            constructors: {
+                mercedes: 44, ferrari: 27, haas: 10, rb: 10,
+                alpine: 9, red_bull: 4, williams: 2
+            },
+            fastestLap: "andrea_kimi_antonelli",
+            sprintDrivers: {
+                george_russell: 8, charles_leclerc: 7, lewis_hamilton: 6,
+                lando_norris: 5, andrea_kimi_antonelli: 4, oscar_piastri: 3,
+                liam_lawson: 2, oliver_bearman: 1
+            },
+            sprintConstructors: {
+                mercedes: 12, ferrari: 13, mclaren: 8, rb: 2, haas: 1
+            }
+        },
+        {
+            round: 3,
+            name: "Japanese Grand Prix",
+            flag: "🇯🇵",
+            date: "29 Mar 2026",
+            drivers: {
+                andrea_kimi_antonelli: 25, oscar_piastri: 18, charles_leclerc: 15,
+                george_russell: 12, lando_norris: 10, lewis_hamilton: 8,
+                pierre_gasly: 7, max_verstappen: 6, liam_lawson: 4, esteban_ocon: 2
+            },
+            constructors: {
+                mercedes: 37, mclaren: 28, ferrari: 23, alpine: 9,
+                red_bull: 6, rb: 4
+            },
+            fastestLap: "andrea_kimi_antonelli",
+            sprintDrivers: {},
+            sprintConstructors: {}
+        }
+    ]
+
+    let raceDataLoaded = false
+
+    async function fetchRaceData() {
+        document.getElementById("races-status").textContent = "Loading..."
+        try {
+            // Try to fetch per-race results from API
+            // Try jolpi proxy first, fall back to direct Ergast
+            let res = await fetch("https://api.jolpi.ca/ergast/f1/current/results/").catch(() => null)
+            if (!res || !res.ok) res = await fetch("https://ergast.com/api/f1/current/results.json")
+            if (!res.ok) throw new Error()
+            const json = await res.json()
+            const races = json.MRData?.RaceTable?.Races || []
+            if (races.length > 0) {
+                // Build race results from API data
+                const apiRaces = []
+                // Also fetch constructor results per race
+                const constRes = await fetch("https://api.jolpi.ca/ergast/f1/current/constructorstandings/")
+                for (const race of races) {
+                    const driverPts = {}
+                    let fastestLapDriver = null
+                    race.Results.forEach(r => {
+                        driverPts[r.Driver.driverId] = parseFloat(r.points) || 0
+                        // FastestLap rank 1 = fastest lap bonus point already included in points from API
+                        if (r.FastestLap && r.FastestLap.rank === "1") {
+                            fastestLapDriver = r.Driver.driverId
+                        }
+                    })
+                    const countryFlags = {
+                        "Australia": "🇦🇺", "Bahrain": "🇧🇭", "Saudi Arabia": "🇸🇦", "Japan": "🇯🇵",
+                        "China": "🇨🇳", "Miami": "🇺🇸", "Emilia Romagna": "🇮🇹", "Monaco": "🇲🇨",
+                        "Spain": "🇪🇸", "Canada": "🇨🇦", "Austria": "🇦🇹", "Great Britain": "🇬🇧",
+                        "Hungary": "🇭🇺", "Belgium": "🇧🇪", "Netherlands": "🇳🇱", "Italy": "🇮🇹",
+                        "Azerbaijan": "🇦🇿", "Singapore": "🇸🇬", "United States": "🇺🇸", "Mexico": "🇲🇽",
+                        "Brazil": "🇧🇷", "Las Vegas": "🇺🇸", "Qatar": "🇶🇦", "Abu Dhabi": "🇦🇪"
+                    }
+                    const flag = countryFlags[race.Circuit.Location.country] || countryFlags[race.raceName.split(" ")[0]] || "🏁"
+                    const dateObj = new Date(race.date)
+                    const dateStr = dateObj.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+                    // Calculate constructor pts for this race from driver results
+                    const constPts = {}
+                    race.Results.forEach(r => {
+                        const cid = r.Constructor.constructorId
+                        constPts[cid] = (constPts[cid] || 0) + (parseFloat(r.points) || 0)
+                    })
+                    apiRaces.push({
+                        round: parseInt(race.round),
+                        name: race.raceName,
+                        flag,
+                        date: dateStr,
+                        drivers: driverPts,
+                        constructors: constPts,
+                        fastestLap: fastestLapDriver,
+                        sprintDrivers: {},
+                        sprintConstructors: {}
+                    })
+                }
+                // Fetch sprint results and merge into race entries
+                try {
+                    let sprintRes = await fetch("https://api.jolpi.ca/ergast/f1/current/sprint/").catch(() => null)
+                    if (!sprintRes || !sprintRes.ok) sprintRes = await fetch("https://ergast.com/api/f1/current/sprint.json")
+                    if (sprintRes.ok) {
+                        const sprintJson = await sprintRes.json()
+                        const sprintRaces = sprintJson.MRData?.RaceTable?.Races || []
+                        sprintRaces.forEach(sr => {
+                            const round = parseInt(sr.round)
+                            const entry = apiRaces.find(r => r.round === round)
+                            if (!entry) return
+                            const sdPts = {}, scPts = {}
+                            sr.SprintResults.forEach(r => {
+                                sdPts[r.Driver.driverId] = parseFloat(r.points) || 0
+                                const cid = r.Constructor.constructorId
+                                scPts[cid] = (scPts[cid] || 0) + (parseFloat(r.points) || 0)
+                            })
+                            entry.sprintDrivers = sdPts
+                            entry.sprintConstructors = scPts
+                        })
+                    }
+                } catch(e) { console.warn("Sprint fetch failed", e) }
+
+                // Merge: use API races but fall back to hardcoded for rounds not in API
+                const apiRounds = apiRaces.map(r => r.round)
+                const merged = [...apiRaces]
+                RACE_RESULTS.forEach(r => { if (!apiRounds.includes(r.round)) merged.push(r) })
+                merged.sort((a,b) => a.round - b.round)
+                latestRaces = merged
+                renderRaceTab(merged)
+                document.getElementById("races-status").textContent = merged.length + " race" + (merged.length!==1?"s":"")
+                raceDataLoaded = true
+                return
+            }
+        } catch(e) { console.info("Race API unavailable, using hardcoded data") }
+        // Fallback to hardcoded
+        latestRaces = RACE_RESULTS
+        renderRaceTab(RACE_RESULTS)
+        document.getElementById("races-status").textContent = RACE_RESULTS.length + " race" + (RACE_RESULTS.length!==1?"s":"")
+    }
+
+    function calcRaceScore(playerIndex, raceResult) {
+        const p = players[playerIndex]
+        let score = 0, breakdown = []
+        p.driversIds.forEach(id => {
+            const pts = raceResult.drivers[id] || 0
+            if (pts > 0) { score += pts; breakdown.push((driversData[id]?.name || id).split(" ").pop() + " +" + pts) }
+        })
+        p.teamsIds.forEach(id => {
+            const pts = raceResult.constructors[id] || 0
+            if (pts > 0) { score += pts; breakdown.push((constructorsData[id]?.name || id) + " +" + pts) }
+        })
+        return { score, breakdown }
+    }
+
+    function renderRaceTab(races) {
+        const container = document.getElementById("race-list")
+        container.innerHTML = ""
+        if (!races.length) {
+            container.innerHTML = `<div class="loading-races">No race results yet — check back after the first race!</div>`
+            return
+        }
+        // Show most recent race first
+        const sorted = [...races].reverse()
+        sorted.forEach(race => {
+            const card = document.createElement("div"); card.className = "race-card"
+            // Calculate scores for all players for this race
+            const scores = players.map((p, i) => {
+                const { score, breakdown } = calcRaceScoreWithTrades(i, race)
+                return { name: p.name, score, breakdown }
+            }).sort((a,b) => b.score - a.score)
+            const winner = scores[0]
+            card.innerHTML = `
+                <div class="race-header" onclick="toggleRaceCard(this)">
+                    <div class="race-flag">${race.flag}</div>
+                    <div>
+                        <div class="race-name">${race.name}</div>
+                        <div class="race-date">${race.date}${race.sprintDrivers && Object.keys(race.sprintDrivers).length ? " · ⚡ Sprint" : ""} · 🏆 ${winner.score > 0 ? winner.name + " ("+winner.score+" pts)" : "No scores yet"}${race.fastestLap ? " · FL: " + (driversData[race.fastestLap]?.name || race.fastestLap).split(" ").pop() : ""}</div>
+                    </div>
+                    <div class="race-chevron">▼</div>
+                </div>
+                <div class="race-body">
+                    ${scores.map((s, rank) => `
+                        <div class="race-row">
+                            <div class="race-pos">${rank+1}</div>
+                            <div style="flex:1;min-width:0;">
+                                <div class="race-player">${s.name}</div>
+                                ${s.breakdown.length ? `<div class="race-breakdown">${s.breakdown.join(" · ")}</div>` : `<div class="race-breakdown">No points scored</div>`}
+                            </div>
+                            <div class="race-pts mono ${s.score===0?'zero':''}">${s.score}</div>
+                        </div>`).join("")}
+                </div>`
+            container.appendChild(card)
+        })
+        // Auto-open the first (most recent) card
+        const first = container.querySelector(".race-card")
+        if (first) first.classList.add("open")
+    }
+
+    function toggleRaceCard(header) {
+        header.parentElement.classList.toggle("open")
+    }
+
+    // ── TRADES ───────────────────────────────────────────────────────────────
+    // Trade structure: { id, fromPlayer, fromDriver, toPlayer, toDriver, status, date, roundAfter }
+    // status: 'pending' | 'accepted' | 'declined'
+    // roundAfter: races completed at time of trade (used to credit past scores correctly)
+    let trades = []
+    let tradeStep = 0      // 0=pick proposer, 1=pick proposer's driver, 2=pick target player, 3=pick target's driver, 4=confirm
+    let tradeDraft = {}    // building up the trade
+
+    function loadTrades() {
+        try {
+            const s = localStorage.getItem("f1Fantasy2026_trades")
+            trades = s ? JSON.parse(s) : []
+        } catch { trades = [] }
+    }
+
+    function saveTrades() {
+        try { localStorage.setItem("f1Fantasy2026_trades", JSON.stringify(trades)) } catch {}
+        // Trades are saved together with players in Supabase
+        saveToSupabase()
+    }
+
+    function renderTradeTab() {
+        const el = document.getElementById("trade-list"); el.innerHTML = ""
+        const pending = trades.filter(t => t.status === "pending")
+        const done    = trades.filter(t => t.status !== "pending")
+
+        if (!trades.length) {
+            el.innerHTML = `<div style="padding:40px;text-align:center;color:#71717a;font-size:14px;">No trades yet.<br>Propose one above!</div>`
+            return
+        }
+
+        if (pending.length) {
+            el.innerHTML += `<div class="trade-section-title">⏳ Pending</div>`
+            pending.forEach(t => el.appendChild(buildTradeCard(t)))
+        }
+        if (done.length) {
+            el.innerHTML += `<div class="trade-section-title">📋 History</div>`
+            done.forEach(t => el.appendChild(buildTradeCard(t)))
+        }
+    }
+
+    function driverName(id) {
+        return driversData[id]?.name || id
+    }
+
+    function buildTradeCard(t) {
+        const card = document.createElement("div")
+        card.className = "trade-card " + t.status
+        const badgeLabel = t.status === "pending" ? "⏳ Pending" : t.status === "accepted" ? "✅ Accepted" : "❌ Declined"
+        card.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <span class="trade-badge ${t.status}">${badgeLabel}</span>
+                <span style="font-size:11px;color:#71717a;">${t.date}</span>
+            </div>
+            <div class="trade-players">
+                <div class="trade-player-box">
+                    <div class="tpb-name">${t.fromPlayer} gives</div>
+                    <div class="tpb-driver">${driverName(t.fromDriver)}</div>
+                </div>
+                <div class="trade-arrow">⇄</div>
+                <div class="trade-player-box">
+                    <div class="tpb-name">${t.toPlayer} gives</div>
+                    <div class="tpb-driver">${driverName(t.toDriver)}</div>
+                </div>
+            </div>
+            ${t.status === "pending" ? `
+            <div class="trade-actions">
+                <button class="trade-btn accept" onclick="acceptTrade('${t.id}')">✅ Accept</button>
+                <button class="trade-btn decline" onclick="declineTrade('${t.id}')">❌ Decline</button>
+            </div>` : t.status === "accepted" ? `
+            <div style="font-size:11px;color:#71717a;">Trade completed after round ${t.roundAfter ?? "—"}. Points recalculated from next race.</div>` : `
+            <div style="font-size:11px;color:#71717a;">Trade was declined.</div>`}
+        `
+        return card
+    }
+
+    function acceptTrade(id) {
+        const t = trades.find(x => x.id === id)
+        if (!t || t.status !== "pending") return
+
+        // Find current round from completed races
+        t.roundAfter = currentRoundCompleted()
+        t.status = "accepted"
+
+        // Swap drivers between players
+        const fromP = players.find(p => p.name === t.fromPlayer)
+        const toP   = players.find(p => p.name === t.toPlayer)
+        if (!fromP || !toP) { showToast("Player not found"); return }
+
+        fromP.driversIds = fromP.driversIds.filter(d => d !== t.fromDriver)
+        fromP.driversIds.push(t.toDriver)
+        toP.driversIds   = toP.driversIds.filter(d => d !== t.toDriver)
+        toP.driversIds.push(t.fromDriver)
+
+        // Lock in past race scores for these players for all races up to now
+        // by storing a snapshot in the trade record (used by calcRaceScore)
+        t.fromPlayerRosterBefore = { driversIds: [...fromP.driversIds.filter(d => d !== t.toDriver), t.fromDriver], teamsIds: [...fromP.teamsIds] }
+        t.toPlayerRosterBefore   = { driversIds: [...toP.driversIds.filter(d => d !== t.fromDriver), t.toDriver], teamsIds: [...toP.teamsIds] }
+
+        saveTrades()
+        saveToStorage()
+        renderEverything()
+        renderTradeTab()
+        showToast("Trade accepted! Teams updated ✓")
+    }
+
+    function declineTrade(id) {
+        const t = trades.find(x => x.id === id)
+        if (!t || t.status !== "pending") return
+        t.status = "declined"
+        saveTrades()
+        renderTradeTab()
+        showToast("Trade declined")
+    }
+
+    function currentRoundCompleted() {
+        // Return the highest race round we have data for
+        if (typeof latestRaces !== "undefined" && latestRaces.length) return Math.max(...latestRaces.map(r => r.round))
+        return RACE_RESULTS.length > 0 ? Math.max(...RACE_RESULTS.map(r => r.round)) : 0
+    }
+
+    // Override calcRaceScore to respect trade history
+    function calcRaceScoreWithTrades(playerIndex, raceResult) {
+        const p = players[playerIndex]
+        // Normalise IDs - handles both short (russell) and full (george_russell) IDs
+        let driversIds = p.driversIds.map(function(id){ return ID_MAP[id]||id })
+        let teamsIds   = p.teamsIds.map(function(id){   return ID_MAP[id]||id })
+
+        // Apply trade history if needed
+        if (trades && trades.length > 0) {
+            trades.filter(function(t){ return t.status==="accepted" && t.roundAfter!=null }).forEach(function(t) {
+                if (raceResult.round <= t.roundAfter) {
+                    if (t.fromPlayer===p.name && t.fromPlayerRosterBefore) {
+                        driversIds = t.fromPlayerRosterBefore.driversIds.map(function(id){ return ID_MAP[id]||id })
+                        teamsIds   = t.fromPlayerRosterBefore.teamsIds.map(function(id){   return ID_MAP[id]||id })
+                    }
+                    if (t.toPlayer===p.name && t.toPlayerRosterBefore) {
+                        driversIds = t.toPlayerRosterBefore.driversIds.map(function(id){ return ID_MAP[id]||id })
+                        teamsIds   = t.toPlayerRosterBefore.teamsIds.map(function(id){   return ID_MAP[id]||id })
+                    }
+                }
+            })
+        }
+
+        // Build name lookup from FALLBACK_DRIVERS (always available)
+        var driverNameMap = {}
+        FALLBACK_DRIVERS.forEach(function(fd) { driverNameMap[fd.id] = fd.name })
+        var CNAMES = {"rb":"Racing Bulls","haas":"Haas","alpine":"Alpine","aston_martin":"Aston Martin","red_bull":"Red Bull","mclaren":"McLaren","mercedes":"Mercedes","ferrari":"Ferrari","williams":"Williams","audi":"Audi","cadillac":"Cadillac"}
+
+        let score = 0, breakdown = []
+        driversIds.forEach(function(nid) {
+            const racePts   = raceResult.drivers[nid] || 0
+            const sprintPts = (raceResult.sprintDrivers || {})[nid] || 0
+            const total     = racePts + sprintPts
+            const isFastest = raceResult.fastestLap === nid
+            if (total > 0) {
+                score += total
+                // Use FALLBACK_DRIVERS name first, then driversData, then clean up ID
+                const dName = driverNameMap[nid] || (driversData[nid] ? driversData[nid].name : nid.split("_").map(function(w){ return w[0].toUpperCase()+w.slice(1) }).join(" "))
+                const lastName = dName.split(" ").pop()
+                let label = lastName + " +" + total
+                if (isFastest) label += " ⚡"
+                if (sprintPts > 0 && racePts > 0) label += " (race " + racePts + " + sprint " + sprintPts + ")"
+                else if (sprintPts > 0) label += " (sprint)"
+                breakdown.push(label)
+            }
+        })
+        teamsIds.forEach(function(nid) {
+            const racePts   = raceResult.constructors[nid] || 0
+            const sprintPts = (raceResult.sprintConstructors || {})[nid] || 0
+            const total     = racePts + sprintPts
+            if (total > 0) {
+                score += total
+                const cName = CNAMES[nid] || (constructorsData[nid] ? constructorsData[nid].name : nid.split("_").map(function(w){ return w[0].toUpperCase()+w.slice(1) }).join(" "))
+                let label = cName + " +" + total
+                if (sprintPts > 0 && racePts > 0) label += " (race " + racePts + " + sprint " + sprintPts + ")"
+                else if (sprintPts > 0) label += " (sprint)"
+                breakdown.push(label)
+            }
+        })
+        return { score, breakdown }
+    }
+
+    // ── Trade propose wizard ─────────────────────────────────────────────────
     function openTradeModal() {
-        alert("Trade feature coming soon");
+        tradeStep = 0
+        tradeDraft = {}
+        renderTradeStep()
+        document.getElementById("trade-modal").classList.add("open")
     }
 
     function closeTradeModal() {
-        document.getElementById("trade-modal").style.display = "none";
+        document.getElementById("trade-modal").classList.remove("open")
     }
 
-    function resetToDefaults() {
-        if (confirm("Reset to defaults?")) {
-            players = JSON.parse(JSON.stringify(DEFAULT_PLAYERS));
-            renderEverything();
+    function tradeNext() {
+        if (tradeStep === 4) { submitTrade(); return }
+        tradeStep++
+        renderTradeStep()
+    }
+
+    function renderTradeStep() {
+        const body = document.getElementById("trade-modal-body")
+        const nextBtn = document.getElementById("trade-next-btn")
+        body.innerHTML = ""
+        nextBtn.disabled = true
+
+        const steps = ["Pick proposer", "Pick their driver", "Pick recipient", "Pick their driver", "Confirm"]
+        document.getElementById("trade-modal-sub").textContent = "Step " + (tradeStep + 1) + " of 5 — " + steps[tradeStep]
+
+        if (tradeStep === 0) {
+            // Pick from-player
+            document.getElementById("trade-modal-title").textContent = "Who is proposing?"
+            const list = document.createElement("div"); list.className = "trade-picker-list"
+            players.forEach((p, i) => {
+                const row = document.createElement("div"); row.className = "trade-pick-row" + (tradeDraft.fromPlayer === p.name ? " selected" : "")
+                row.innerHTML = `<div class="trade-pick-dot"><div class="trade-pick-dot-inner"></div></div>
+                    <div style="flex:1;"><div style="font-size:15px;font-weight:600;">${p.name}</div>
+                    <div style="font-size:12px;color:#a1a1aa;margin-top:2px;">${p.driversIds.map(id => driverName(id)).join(", ") || "No drivers"}</div></div>`
+                row.onclick = () => { tradeDraft.fromPlayer = p.name; renderTradeStep() }
+                list.appendChild(row)
+            })
+            body.appendChild(list)
+            if (tradeDraft.fromPlayer) nextBtn.disabled = false
+
+        } else if (tradeStep === 1) {
+            // Pick from-driver
+            document.getElementById("trade-modal-title").textContent = tradeDraft.fromPlayer + "'s driver to give"
+            const fromP = players.find(p => p.name === tradeDraft.fromPlayer)
+            const list = document.createElement("div"); list.className = "trade-picker-list"
+            fromP.driversIds.forEach(id => {
+                const row = document.createElement("div"); row.className = "trade-pick-row" + (tradeDraft.fromDriver === id ? " selected" : "")
+                row.innerHTML = `<div class="trade-pick-dot"><div class="trade-pick-dot-inner"></div></div>
+                    <div style="flex:1;"><div style="font-size:15px;font-weight:600;">${driverName(id)}</div>
+                    <div style="font-size:12px;color:#a1a1aa;">${driversData[id]?.team || ""} · ${driversData[id]?.points || 0} pts</div></div>`
+                row.onclick = () => { tradeDraft.fromDriver = id; renderTradeStep() }
+                list.appendChild(row)
+            })
+            if (!fromP.driversIds.length) list.innerHTML = `<div style="padding:30px;text-align:center;color:#71717a;">No drivers assigned yet</div>`
+            body.appendChild(list)
+            if (tradeDraft.fromDriver) nextBtn.disabled = false
+
+        } else if (tradeStep === 2) {
+            // Pick to-player
+            document.getElementById("trade-modal-title").textContent = "Who receives the trade?"
+            const list = document.createElement("div"); list.className = "trade-picker-list"
+            players.filter(p => p.name !== tradeDraft.fromPlayer).forEach(p => {
+                const row = document.createElement("div"); row.className = "trade-pick-row" + (tradeDraft.toPlayer === p.name ? " selected" : "")
+                row.innerHTML = `<div class="trade-pick-dot"><div class="trade-pick-dot-inner"></div></div>
+                    <div style="flex:1;"><div style="font-size:15px;font-weight:600;">${p.name}</div>
+                    <div style="font-size:12px;color:#a1a1aa;margin-top:2px;">${p.driversIds.map(id => driverName(id)).join(", ") || "No drivers"}</div></div>`
+                row.onclick = () => { tradeDraft.toPlayer = p.name; renderTradeStep() }
+                list.appendChild(row)
+            })
+            body.appendChild(list)
+            if (tradeDraft.toPlayer) nextBtn.disabled = false
+
+        } else if (tradeStep === 3) {
+            // Pick to-driver
+            document.getElementById("trade-modal-title").textContent = tradeDraft.toPlayer + "'s driver to give"
+            const toP = players.find(p => p.name === tradeDraft.toPlayer)
+            const list = document.createElement("div"); list.className = "trade-picker-list"
+            toP.driversIds.forEach(id => {
+                const row = document.createElement("div"); row.className = "trade-pick-row" + (tradeDraft.toDriver === id ? " selected" : "")
+                row.innerHTML = `<div class="trade-pick-dot"><div class="trade-pick-dot-inner"></div></div>
+                    <div style="flex:1;"><div style="font-size:15px;font-weight:600;">${driverName(id)}</div>
+                    <div style="font-size:12px;color:#a1a1aa;">${driversData[id]?.team || ""} · ${driversData[id]?.points || 0} pts</div></div>`
+                row.onclick = () => { tradeDraft.toDriver = id; renderTradeStep() }
+                list.appendChild(row)
+            })
+            if (!toP.driversIds.length) list.innerHTML = `<div style="padding:30px;text-align:center;color:#71717a;">No drivers assigned yet</div>`
+            body.appendChild(list)
+            if (tradeDraft.toDriver) nextBtn.disabled = false
+
+        } else if (tradeStep === 4) {
+            // Confirm
+            document.getElementById("trade-modal-title").textContent = "Confirm Trade"
+            nextBtn.textContent = "Submit Trade 🤝"
+            nextBtn.disabled = false
+            body.innerHTML = `
+                <div class="trade-summary-box">
+                    <div style="font-size:13px;color:#71717a;margin-bottom:12px;">Proposed trade:</div>
+                    <div class="trade-players">
+                        <div class="trade-player-box">
+                            <div class="tpb-name">${tradeDraft.fromPlayer} gives</div>
+                            <div class="tpb-driver">${driverName(tradeDraft.fromDriver)}</div>
+                        </div>
+                        <div class="trade-arrow">⇄</div>
+                        <div class="trade-player-box">
+                            <div class="tpb-name">${tradeDraft.toPlayer} gives</div>
+                            <div class="tpb-driver">${driverName(tradeDraft.toDriver)}</div>
+                        </div>
+                    </div>
+                    <div style="font-size:12px;color:#71717a;margin-top:8px;">
+                        Once submitted, ${tradeDraft.toPlayer} can accept or decline on the Trades tab.
+                        If accepted, teams update immediately and past race scores stay the same.
+                    </div>
+                </div>`
         }
+    }
+
+    function submitTrade() {
+        const now = new Date()
+        const dateStr = now.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+        const trade = {
+            id: "t" + Date.now(),
+            fromPlayer: tradeDraft.fromPlayer,
+            fromDriver: tradeDraft.fromDriver,
+            toPlayer:   tradeDraft.toPlayer,
+            toDriver:   tradeDraft.toDriver,
+            status: "pending",
+            date: dateStr,
+            roundAfter: null
+        }
+        trades.unshift(trade)
+        saveTrades()
+        closeTradeModal()
+        document.getElementById("trade-next-btn").textContent = "Next →"
+        renderTradeTab()
+        switchTab(2)
+        showToast("Trade proposed! Waiting for " + tradeDraft.toPlayer + " to respond.")
+    }
+    let latestRaces = []
+
+    // ── End TRADES ────────────────────────────────────────────────────────────
+
+    // ── CALENDAR & COUNTDOWN ─────────────────────────────────────────────────
+    const CALENDAR_2026 = [
+        {
+                "round": 1,
+                "name": "Australian GP",
+                "flag": "\ud83c\udde6\ud83c\uddfa",
+                "circuit": "Albert Park",
+                "date": "2026-03-08",
+                "sprint": false
+        },
+        {
+                "round": 2,
+                "name": "Chinese GP",
+                "flag": "\ud83c\udde8\ud83c\uddf3",
+                "circuit": "Shanghai",
+                "date": "2026-03-15",
+                "sprint": true
+        },
+        {
+                "round": 3,
+                "name": "Japanese GP",
+                "flag": "\ud83c\uddef\ud83c\uddf5",
+                "circuit": "Suzuka",
+                "date": "2026-03-29",
+                "sprint": false
+        },
+        {
+                "round": 4,
+                "name": "Miami GP",
+                "flag": "\ud83c\uddfa\ud83c\uddf8",
+                "circuit": "Miami Int'l Autodrome",
+                "date": "2026-05-03",
+                "sprint": true
+        },
+        {
+                "round": 5,
+                "name": "Monaco GP",
+                "flag": "\ud83c\uddf2\ud83c\udde8",
+                "circuit": "Circuit de Monaco",
+                "date": "2026-05-24",
+                "sprint": false
+        },
+        {
+                "round": 6,
+                "name": "Barcelona-Catalunya GP",
+                "flag": "\ud83c\uddea\ud83c\uddf8",
+                "circuit": "Circuit de Catalunya",
+                "date": "2026-06-07",
+                "sprint": false
+        },
+        {
+                "round": 7,
+                "name": "Canadian GP",
+                "flag": "\ud83c\udde8\ud83c\udde6",
+                "circuit": "Circuit Gilles V.",
+                "date": "2026-06-14",
+                "sprint": true
+        },
+        {
+                "round": 8,
+                "name": "Austrian GP",
+                "flag": "\ud83c\udde6\ud83c\uddf9",
+                "circuit": "Red Bull Ring",
+                "date": "2026-06-28",
+                "sprint": false
+        },
+        {
+                "round": 9,
+                "name": "British GP",
+                "flag": "\ud83c\uddec\ud83c\udde7",
+                "circuit": "Silverstone",
+                "date": "2026-07-05",
+                "sprint": true
+        },
+        {
+                "round": 10,
+                "name": "Belgian GP",
+                "flag": "\ud83c\udde7\ud83c\uddea",
+                "circuit": "Spa-Francorchamps",
+                "date": "2026-07-19",
+                "sprint": false
+        },
+        {
+                "round": 11,
+                "name": "Hungarian GP",
+                "flag": "\ud83c\udded\ud83c\uddfa",
+                "circuit": "Hungaroring",
+                "date": "2026-07-26",
+                "sprint": false
+        },
+        {
+                "round": 12,
+                "name": "Dutch GP",
+                "flag": "\ud83c\uddf3\ud83c\uddf1",
+                "circuit": "Zandvoort",
+                "date": "2026-08-23",
+                "sprint": true
+        },
+        {
+                "round": 13,
+                "name": "Italian GP",
+                "flag": "\ud83c\uddee\ud83c\uddf9",
+                "circuit": "Monza",
+                "date": "2026-09-06",
+                "sprint": false
+        },
+        {
+                "round": 14,
+                "name": "Madrid GP",
+                "flag": "\ud83c\uddea\ud83c\uddf8",
+                "circuit": "Madrid Street Circuit",
+                "date": "2026-09-13",
+                "sprint": false
+        },
+        {
+                "round": 15,
+                "name": "Azerbaijan GP",
+                "flag": "\ud83c\udde6\ud83c\uddff",
+                "circuit": "Baku City Circuit",
+                "date": "2026-09-26",
+                "sprint": false
+        },
+        {
+                "round": 16,
+                "name": "Singapore GP",
+                "flag": "\ud83c\uddf8\ud83c\uddec",
+                "circuit": "Marina Bay",
+                "date": "2026-10-11",
+                "sprint": true
+        },
+        {
+                "round": 17,
+                "name": "United States GP",
+                "flag": "\ud83c\uddfa\ud83c\uddf8",
+                "circuit": "COTA",
+                "date": "2026-10-25",
+                "sprint": false
+        },
+        {
+                "round": 18,
+                "name": "Mexican GP",
+                "flag": "\ud83c\uddf2\ud83c\uddfd",
+                "circuit": "Hermanos Rodr\u00edguez",
+                "date": "2026-11-01",
+                "sprint": false
+        },
+        {
+                "round": 19,
+                "name": "Brazilian GP",
+                "flag": "\ud83c\udde7\ud83c\uddf7",
+                "circuit": "Interlagos",
+                "date": "2026-11-08",
+                "sprint": false
+        },
+        {
+                "round": 20,
+                "name": "Las Vegas GP",
+                "flag": "\ud83c\uddfa\ud83c\uddf8",
+                "circuit": "Las Vegas Street",
+                "date": "2026-11-21",
+                "sprint": false
+        },
+        {
+                "round": 21,
+                "name": "Qatar GP",
+                "flag": "\ud83c\uddf6\ud83c\udde6",
+                "circuit": "Lusail",
+                "date": "2026-11-29",
+                "sprint": false
+        },
+        {
+                "round": 22,
+                "name": "Abu Dhabi GP",
+                "flag": "\ud83c\udde6\ud83c\uddea",
+                "circuit": "Yas Marina",
+                "date": "2026-12-06",
+                "sprint": false
+        }
+];
+
+    function renderSchedule() {
+        const el = document.getElementById("schedule-list"); el.innerHTML = ""
+        const now = new Date()
+        let nextFound = false
+        CALENDAR_2026.forEach(race => {
+            const raceDateTime = new Date(race.date)
+            raceDateTime.setHours(14, 0, 0, 0)
+            const isPast = raceDateTime <= now
+            const isNext = !isPast && !nextFound
+            if (isNext) nextFound = true
+            const dateStr = raceDateTime.toLocaleDateString("en-GB",{day:"numeric",month:"short"})
+            const div = document.createElement("div")
+            div.className = "sched-card" + (isPast?" past":"") + (isNext?" next":"")
+            div.innerHTML = `
+                <div class="sched-flag">${race.flag}</div>
+                <div style="flex:1;min-width:0;">
+                    <div class="sched-round">ROUND ${race.round}</div>
+                    <div class="sched-name">${race.name}</div>
+                    <div class="sched-circuit">${race.circuit}</div>
+                </div>
+                <div class="sched-date">
+                    <div class="sched-date-str">${dateStr}</div>
+                    ${race.sprint ? '<div class="sched-sprint">⚡ SPRINT</div>' : ''}
+                    ${isPast ? '<div class="sched-done">✓ Done</div>' : ''}
+                    ${isNext ? '<div style="font-size:10px;color:#e10600;font-weight:700;margin-top:2px;">▶ NEXT</div>' : ''}
+                </div>`
+            el.appendChild(div)
+        })
+    }
+
+    function updateCountdown() {
+        const now = new Date()
+        // Compare full datetime: treat race as starting at ~14:00 local time
+        // so once race day's approximate start time has passed, move to the next race
+        const upcoming = CALENDAR_2026.filter(r => {
+            const raceDateTime = new Date(r.date)
+            raceDateTime.setHours(14, 0, 0, 0)
+            return raceDateTime > now
+        })
+        if (!upcoming.length) {
+            document.getElementById("cd-race-name").textContent = "Season complete!"
+            document.getElementById("cd-time").textContent = "🏁"
+            document.getElementById("cd-sprint-flag").textContent = ""
+            return
+        }
+        const next = upcoming[0]
+        const raceDate = new Date(next.date)
+        raceDate.setHours(14, 0, 0, 0)
+        const diff = raceDate - now
+        const days  = Math.floor(diff / 86400000)
+        const hours = Math.floor((diff % 86400000) / 3600000)
+        const mins  = Math.floor((diff % 3600000) / 60000)
+        document.getElementById("cd-race-name").textContent = next.flag + "  " + next.name
+        if (days > 0) {
+            document.getElementById("cd-time").textContent = days + "d " + hours + "h"
+        } else if (hours > 0) {
+            document.getElementById("cd-time").textContent = hours + "h " + mins + "m"
+        } else if (mins > 0) {
+            document.getElementById("cd-time").textContent = mins + "m"
+        } else {
+            document.getElementById("cd-time").textContent = "🏁 NOW"
+        }
+        document.getElementById("cd-sprint-flag").textContent = next.sprint ? "⚡ Sprint weekend" : "Race weekend"
+    }
+
+    // ── MAP ──────────────────────────────────────────────────────────────────
+    // ── End CALENDAR ──────────────────────────────────────────────────────────
+
+    // Valid IDs based on current roster
+    function getLimits(index) {
+        if (players[index].name === "Kids") return { maxDrivers: 2, maxTeams: 3 }
+        return { maxDrivers: 5, maxTeams: 2 }
+    }
+
+    function getValidDriverIds() { return allDriversList.map(d => d.id) }
+    function getValidConstructorIds() { return allConstructorsList.map(c => c.id) }
+
+    // Remove any saved driver/constructor IDs that no longer exist in the current roster
+    function cleanupInvalidSelections() {
+        const validDrivers = getValidDriverIds()
+        const validConstructors = getValidConstructorIds()
+        let changed = false
+        players.forEach(p => {
+            const cleanDrivers = p.driversIds.filter(id => validDrivers.includes(id))
+            const cleanTeams   = p.teamsIds.filter(id => validConstructors.includes(id))
+            if (cleanDrivers.length !== p.driversIds.length || cleanTeams.length !== p.teamsIds.length) {
+                const removedDrivers = p.driversIds.filter(id => !validDrivers.includes(id))
+                const removedTeams   = p.teamsIds.filter(id => !validConstructors.includes(id))
+                if (removedDrivers.length) console.log(p.name + ': removed drivers ' + removedDrivers.join(', '))
+                if (removedTeams.length)   console.log(p.name + ': removed constructors ' + removedTeams.join(', '))
+                p.driversIds = cleanDrivers
+                p.teamsIds   = cleanTeams
+                changed = true
+            }
+        })
+        if (changed) { saveToStorage(); console.log('Cleaned up outdated selections') }
     }
 
     async function startApp() {
-        setSyncStatus("saving", "Connecting to Supabase...");
-        const ready = await initSupabase();
-        if (!ready) {
-            setSyncStatus("error", "Failed to load Supabase");
-            return;
+        // Load fallback driver/constructor data first so UI isn't blank
+        loadFallbackData()
+        // Seed default players in memory
+        players = JSON.parse(JSON.stringify(DEFAULT_PLAYERS))
+        trades = []
+
+        // Try localStorage as quick initial load while Supabase connects
+        try {
+            const saved = localStorage.getItem("f1Fantasy2026")
+            if (saved) {
+                const p = JSON.parse(saved).players
+                if (p && p.length === 5) players = p
+            }
+            const savedTrades = localStorage.getItem("f1Fantasy2026_trades")
+            if (savedTrades) trades = JSON.parse(savedTrades)
+        } catch(e) {}
+        normaliseIds()
+        renderEverything()
+        renderTradeTab()
+
+        // Now load fresh from Supabase (overwrites local if available)
+        setSyncStatus("saving", "Connecting...")
+        await loadFromSupabase()
+
+        // Auto-migrate if stored rosters don't match the current DEFAULT_PLAYERS
+        // Version is stored in localStorage so migration only needs to succeed once.
+        const ROSTER_VERSION = "v2026-03-29c"  // bump this whenever DEFAULT_PLAYERS changes
+        const localVersion = localStorage.getItem("f1Fantasy2026_rosterVersion")
+        const supabaseVersion = players[0]?.__rosterVersion
+        if (localVersion !== ROSTER_VERSION && supabaseVersion !== ROSTER_VERSION) {
+            console.log("Roster version mismatch — migrating to correct rosters")
+            const savedTrades = trades
+            players = JSON.parse(JSON.stringify(DEFAULT_PLAYERS))
+            players[0].__rosterVersion = ROSTER_VERSION
+            trades = savedTrades
+            // Save version to localStorage immediately so migration won't re-run on failure
+            try { localStorage.setItem("f1Fantasy2026_rosterVersion", ROSTER_VERSION) } catch(e) {}
+            // Best-effort save to Supabase (non-blocking, failures are acceptable)
+            saveToSupabase().catch(() => {})
+            showToast("Rosters updated to latest ✓")
+        } else if (localVersion !== ROSTER_VERSION) {
+            // Supabase already has the right version, just sync localStorage
+            try { localStorage.setItem("f1Fantasy2026_rosterVersion", ROSTER_VERSION) } catch(e) {}
         }
-        const success = await loadFromSupabase();
-        renderEverything();
-        setSyncStatus(success ? "live" : "error", success ? "Live — synced" : "Check Supabase data");
+
+        renderEverything()
+        renderTradeTab()
+
+        // Subscribe to real-time changes
+        subscribeToRealtime()
+
+        // Fetch live F1 standings
+        await fetchF1Data()
+        cleanupInvalidSelections()
+        fetchRaceData()
+        renderEverything()
+        renderSchedule()
+        updateCountdown()
+        setInterval(updateCountdown, 60000)
+        switchTab(0)
     }
 
-    window.addEventListener("load", startApp);
+    window.addEventListener("load", startApp)
 </script>
 </body>
 </html>
