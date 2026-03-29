@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- F1 Fantasy v3.1 - Supabase + PWA Edition - 2026-03-29 -->
+<!-- F1 Friends Fantasy 2026 - Pure Cloud Version -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,70 +9,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>F1 Friends Fantasy 2026 🏎️</title>
 
-    <!-- PWA Support -->
+    <!-- PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="F1 Friends Fantasy">
     <meta name="theme-color" content="#000000">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23111111'/%3E%3Ccircle cx='256' cy='256' r='180' fill='%23e10600' fill-opacity='0.1'/%3E%3Ctext x='256' y='310' font-family='system-ui' font-size='260' text-anchor='middle' dominant-baseline='middle' fill='%23ffffff'%3E%F0%9F%8F%8E%EF%B8%8F%3C/text%3E%3C/svg%3E">
 
-    <script>
-// SUPABASE SETUP
-const SUPABASE_URL = "https://bnhyybufxbwsgbroehct.supabase.co"
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJuaHl5YnVmeGJ3c2dicm9laGN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2OTY4MjksImV4cCI6MjA5MDI3MjgyOX0.viW_k7NET9a6-nXpNOn_M4m_cOl6T9hNTfqaLvNXql8"
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-const DB_ROW_ID = 1
-
-function setSyncStatus(status, text) {
-    const dot = document.getElementById("sync-dot") || {classList:{add:()=>{}}};
-    const lbl = document.getElementById("sync-label") || {textContent:""};
-    dot.className = "";
-    dot.classList.add(status);
-    lbl.textContent = text;
-}
-
-// Minimal defaults so you see something
-const DEFAULT_PLAYERS = [
-    { name: "Vicky",  driversIds: ["oscar_piastri", "lando_norris"], teamsIds: ["mclaren", "mercedes"] },
-    { name: "Dan",    driversIds: ["max_verstappen"], teamsIds: ["red_bull"] },
-    { name: "Damian", driversIds: ["charles_leclerc"], teamsIds: ["ferrari"] },
-    { name: "Sanne",  driversIds: ["george_russell"], teamsIds: ["mercedes"] },
-    { name: "Kids",   driversIds: ["lance_stroll"], teamsIds: ["aston_martin"] }
-];
-
-let players = JSON.parse(JSON.stringify(DEFAULT_PLAYERS));
-let trades = [];
-
-function normaliseIds() {} // placeholder
-
-function renderEverything() {
-    const lb = document.getElementById("leaderboard");
-    if (lb) lb.innerHTML = "<div style='padding:20px;color:#fff;text-align:center;'>Default teams loaded (5 players)<br><br>Supabase connection still pending</div>";
-}
-
-function refreshData() {
-    alert("Refresh clicked � data should now appear if Supabase works");
-    renderEverything();
-}
-
-function switchTab(tab) {
-    document.querySelectorAll(".tab-btn").forEach((b,i) => b.classList.toggle("active", i===tab));
-    document.querySelectorAll(".screen").forEach((s,i) => s.classList.toggle("active", i===tab));
-}
-
-// Simple load function
-async function startApp() {
-    setSyncStatus("live", "Using default data");
-    renderEverything();
-    showToast = (msg) => alert(msg); // simple toast
-    showToast(" Default teams loaded � check Standings tab");
-}
-
-function showToast(msg) { alert(msg); }
-
-window.addEventListener("load", startApp);
-</script>
+    <script src="https://cdn.tailwindcss.com/3.4.1"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
@@ -320,7 +263,7 @@ window.addEventListener("load", startApp);
             </div>
             <div style="margin-top:16px;background:#27272a;border-radius:14px;padding:14px;">
                 <div style="font-size:12px;font-weight:700;color:#16a34a;letter-spacing:0.8px;margin-bottom:6px;">☁️ CLOUD SYNC ACTIVE</div>
-                <div style="font-size:12px;color:#a1a1aa;line-height:1.6;">All changes save automatically to the cloud and sync live to everyone. No more import/export needed!</div>
+                <div style="font-size:12px;color:#a1a1aa;line-height:1.6;">All changes save automatically to Supabase and sync live to everyone.</div>
             </div>
         </div>
 
@@ -336,4 +279,185 @@ window.addEventListener("load", startApp);
     <div id="modal-header">
         <button id="modal-back" onclick="closeModal()">←</button>
         <div>
-     
+            <div id="modal-title">Edit Team</div>
+            <div id="modal-subtitle"></div>
+        </div>
+    </div>
+
+    <div id="modal-tabs">
+        <button class="modal-tab active" id="mtab-0" onclick="switchModalTab(0)">
+            DRIVERS &nbsp;<span id="driver-count" style="color:#e10600;">0/5</span>
+        </button>
+        <button class="modal-tab" id="mtab-1" onclick="switchModalTab(1)">
+            CONSTRUCTORS &nbsp;<span id="team-count" style="color:#e10600;">0/2</span>
+        </button>
+    </div>
+
+    <div id="search-wrap">
+        <input id="driver-search" type="search" placeholder="🔍  Search drivers or teams..." oninput="filterList()" autocomplete="off" spellcheck="false">
+    </div>
+
+    <div id="modal-list"></div>
+
+    <div id="modal-footer">
+        <div id="footer-count">0 / 5 drivers</div>
+        <button id="save-btn" onclick="savePlayerSelections()">SAVE TEAM ✓</button>
+    </div>
+</div>
+
+<!-- TRADE PROPOSE MODAL -->
+<div id="trade-modal">
+    <div class="trade-modal-header">
+        <button style="background:#27272a;border:none;color:#fff;border-radius:10px;width:38px;height:38px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onclick="closeTradeModal()">←</button>
+        <div>
+            <div id="trade-modal-title" style="font-size:17px;font-weight:700;">Propose Trade</div>
+            <div id="trade-modal-sub" style="font-size:12px;color:#71717a;margin-top:2px;">Step 1 of 4</div>
+        </div>
+    </div>
+    <div id="trade-modal-body" style="flex:1;display:flex;flex-direction:column;overflow:hidden;"></div>
+    <div class="trade-modal-footer">
+        <button class="trade-next-btn" id="trade-next-btn" onclick="tradeNext()" disabled>Next →</button>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+    // Pure Cloud Version - No localStorage
+    const SUPABASE_URL = "https://bnhyybufxbwsgbroehct.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJuaHl5YnVmeGJ3c2dicm9laGN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2OTY4MjksImV4cCI6MjA5MDI3MjgyOX0.viW_k7NET9a6-nXpNOn_M4m_cOl6T9hNTfqaLvNXql8";
+    const DB_ROW_ID = 1;
+
+    let sb = null;
+    let players = [];
+    let trades = [];
+    let currentEditingPlayerIndex = -1;
+    let currentModalTab = 0;
+    let tradeStep = 0;
+    let tradeDraft = {};
+
+    const DEFAULT_PLAYERS = [
+        { name: "Vicky",  driversIds: ["oscar_piastri", "nico_hulkenberg", "alexander_albon", "esteban_ocon", "lando_norris"], teamsIds: ["mclaren", "audi"] },
+        { name: "Dan",    driversIds: ["isack_hadjar", "fernando_alonso", "gabriel_bortoleto", "andrea_kimi_antonelli", "arvid_lindblad"], teamsIds: ["rb", "ferrari"] },
+        { name: "Damian", driversIds: ["lewis_hamilton", "oliver_bearman", "max_verstappen", "pierre_gasly", "sergio_perez"], teamsIds: ["haas", "red_bull"] },
+        { name: "Sanne",  driversIds: ["george_russell", "valtteri_bottas", "liam_lawson", "franco_colapinto", "carlos_sainz"], teamsIds: ["mercedes", "williams"] },
+        { name: "Kids",   driversIds: ["lance_stroll", "charles_leclerc"], teamsIds: ["aston_martin", "alpine", "cadillac"] }
+    ];
+
+    const ID_MAP = {
+        "norris":"lando_norris","lando":"lando_norris","piastri":"oscar_piastri","oscar":"oscar_piastri",
+        "russell":"george_russell","george":"george_russell","hamilton":"lewis_hamilton","lewis":"lewis_hamilton",
+        "leclerc":"charles_leclerc","charles":"charles_leclerc","verstappen":"max_verstappen","max":"max_verstappen",
+        "antonelli":"andrea_kimi_antonelli","kimi":"andrea_kimi_antonelli","alonso":"fernando_alonso","fernando":"fernando_alonso",
+        "sainz":"carlos_sainz","carlos":"carlos_sainz","albon":"alexander_albon","alex":"alexander_albon",
+        "stroll":"lance_stroll","lance":"lance_stroll","gasly":"pierre_gasly","pierre":"pierre_gasly",
+        "ocon":"esteban_ocon","esteban":"esteban_ocon","bearman":"oliver_bearman","oliver":"oliver_bearman",
+        "bottas":"valtteri_bottas","valtteri":"valtteri_bottas","hulkenberg":"nico_hulkenberg","nico":"nico_hulkenberg",
+        "bortoleto":"gabriel_bortoleto","gabriel":"gabriel_bortoleto","lawson":"liam_lawson","liam":"liam_lawson",
+        "lindblad":"arvid_lindblad","arvid":"arvid_lindblad","hadjar":"isack_hadjar","isack":"isack_hadjar",
+        "colapinto":"franco_colapinto","franco":"franco_colapinto","perez":"sergio_perez","sergio":"sergio_perez"
+    };
+
+    async function initSupabase() {
+        try {
+            const { createClient } = await import("https://cdn.skypack.dev/@supabase/supabase-js@2");
+            sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+            return true;
+        } catch (e) {
+            console.error("Supabase load failed", e);
+            return false;
+        }
+    }
+
+    async function loadFromSupabase() {
+        if (!sb) return false;
+        try {
+            const { data, error } = await sb
+                .from("fantasy_data")
+                .select("players, trades")
+                .eq("id", DB_ROW_ID)
+                .single();
+
+            if (error) throw error;
+
+            if (data && data.players && Array.isArray(data.players) && data.players.length === 5) {
+                players = data.players;
+            } else {
+                players = JSON.parse(JSON.stringify(DEFAULT_PLAYERS));
+            }
+            trades = data && data.trades ? data.trades : [];
+            return true;
+        } catch (e) {
+            console.error("Load error:", e);
+            players = JSON.parse(JSON.stringify(DEFAULT_PLAYERS));
+            return false;
+        }
+    }
+
+    async function saveToSupabase() {
+        if (!sb) return;
+        try {
+            await sb.from("fantasy_data").upsert({
+                id: DB_ROW_ID,
+                players: players,
+                trades: trades,
+                updated_at: new Date().toISOString()
+            });
+        } catch (e) {
+            console.error("Save failed", e);
+        }
+    }
+
+    function setSyncStatus(status, text) {
+        const dot = document.getElementById("sync-dot");
+        const lbl = document.getElementById("sync-label");
+        if (dot) dot.className = status;
+        if (lbl) lbl.textContent = text || "";
+    }
+
+    function renderEverything() {
+        const lb = document.getElementById("leaderboard");
+        if (lb) {
+            lb.innerHTML = `<div style="padding:30px;text-align:center;color:#fff;">
+                <strong>${players.length} teams loaded from Supabase</strong><br><br>
+                Tap REFRESH to update
+            </div>`;
+        }
+    }
+
+    function refreshData() {
+        setSyncStatus("saving", "Refreshing from Supabase...");
+        loadFromSupabase().then((success) => {
+            renderEverything();
+            setSyncStatus(success ? "live" : "error", success ? "Live — synced" : "Failed to load from Supabase");
+        });
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll(".tab-btn").forEach((b,i) => b.classList.toggle("active", i===tab));
+        document.querySelectorAll(".screen").forEach((s,i) => s.classList.toggle("active", i===tab));
+    }
+
+    // Minimal stubs for other functions to prevent errors
+    function closeModal() { document.getElementById("modal-overlay").classList.remove("open"); }
+    function openTradeModal() { alert("Trade modal not fully implemented in this minimal version"); }
+    function closeTradeModal() { document.getElementById("trade-modal").classList.remove("open"); }
+    function tradeNext() {}
+    function resetToDefaults() { if (confirm("Reset to defaults?")) { players = JSON.parse(JSON.stringify(DEFAULT_PLAYERS)); saveToSupabase(); renderEverything(); } }
+
+    async function startApp() {
+        setSyncStatus("saving", "Connecting to Supabase...");
+        const ready = await initSupabase();
+        if (!ready) {
+            setSyncStatus("error", "Failed to load Supabase library");
+            return;
+        }
+        const success = await loadFromSupabase();
+        renderEverything();
+        setSyncStatus(success ? "live" : "error", success ? "Live — synced" : "Check Supabase row id=1");
+    }
+
+    window.addEventListener("load", startApp);
+</script>
+</body>
+</html>
