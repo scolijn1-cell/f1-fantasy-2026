@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<!-- F1 Fantasy v3.1 - Supabase + PWA Edition - 2026-03-29 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>F1 Friends Fantasy 2026 🏎️</title>
+
+    <!-- PWA Support -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="F1 Friends Fantasy">
+    <meta name="theme-color" content="#000000">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23111111'/%3E%3Ccircle cx='256' cy='256' r='180' fill='%23e10600' fill-opacity='0.1'/%3E%3Ctext x='256' y='310' font-family='system-ui' font-size='260' text-anchor='middle' dominant-baseline='middle' fill='%23ffffff'%3E%F0%9F%8F%8E%EF%B8%8F%3C/text%3E%3C/svg%3E">
+
+    <script src="https://cdn.tailwindcss.com/3.4.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; margin: 0; padding: 0; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: #09090b; color: #fff; }
+
+        .mono { font-family: 'Roboto Mono', monospace; }
+
+        #app { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; background: #18181b; position: relative; overflow: hidden; }
+
+        #header { flex-shrink: 0; background: #000; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #27272a; }
+        #header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; line-height: 1; margin: 0; }
+        #header p { font-size: 10px; color: #71717a; margin: 2px 0 0; }
+        #refresh-btn { background: #27272a; border: none; color: #fff; border-radius: 20px; padding: 9px 14px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        #refresh-btn:active { background: #3f3f46; }
+
+        #tabs { flex-shrink: 0; display: flex; background: #000; border-bottom: 1px solid #27272a; }
+        .tab-btn { flex: 1; padding: 13px 4px; font-size: 11px; font-weight: 600; color: #71717a; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; letter-spacing: 0.2px; }
+        .tab-btn.active { color: #e10600; border-bottom-color: #e10600; }
+
+        #screens { flex: 1; overflow: hidden; position: relative; }
+        .screen { position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px 14px 24px; display: none; }
+        .screen.active { display: block; }
+
+        .lb-card { background: #27272a; border-radius: 14px; padding: 13px 14px; display: flex; align-items: center; gap: 11px; margin-bottom: 9px; cursor: pointer; }
+        .lb-card:active { background: #3f3f46; }
+        .lb-rank { width: 38px; height: 38px; background: #3f3f46; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0; }
+        .lb-rank.gold   { background: #78350f; color: #fbbf24; }
+        .lb-rank.silver { background: #1f2937; color: #d1d5db; }
+        .lb-rank.bronze { background: #7c2d12; color: #fb923c; }
+
+        .player-card { background: #27272a; border-radius: 14px; padding: 13px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+        .rename-btn { background: none; border: none; font-size: 20px; cursor: pointer; padding: 2px 4px; flex-shrink: 0; line-height: 1; }
+        .player-name { font-size: 16px; font-weight: 600; line-height: 1.2; }
+        .player-meta { font-size: 12px; color: #a1a1aa; margin-top: 3px; }
+        .edit-btn { background: #e10600; border: none; color: #fff; border-radius: 10px; padding: 9px 14px; font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+        .edit-btn:active { background: #b91c1c; }
+
+        #modal-overlay { position: fixed; inset: 0; z-index: 100; display: none; flex-direction: column; background: #18181b; }
+        #modal-overlay.open { display: flex; }
+
+        #modal-header { flex-shrink: 0; background: #000; padding: 13px 14px; display: flex; align-items: center; gap: 11px; border-bottom: 1px solid #27272a; }
+        #modal-back { background: #27272a; border: none; color: #fff; border-radius: 10px; width: 38px; height: 38px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        #modal-back:active { background: #3f3f46; }
+        #modal-title { font-size: 17px; font-weight: 700; line-height: 1.2; }
+        #modal-subtitle { font-size: 12px; color: #71717a; margin-top: 2px; }
+
+        #modal-tabs { flex-shrink: 0; display: flex; background: #000; border-bottom: 1px solid #27272a; }
+        .modal-tab { flex: 1; padding: 12px 6px; font-size: 12px; font-weight: 600; color: #71717a; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; letter-spacing: 0.2px; }
+        .modal-tab.active { color: #e10600; border-bottom-color: #e10600; }
+
+        #search-wrap { flex-shrink: 0; padding: 10px 14px; background: #18181b; border-bottom: 1px solid #27272a; }
+        #driver-search { width: 100%; background: #27272a; border: none; color: #fff; border-radius: 11px; padding: 10px 14px; font-size: 15px; outline: none; -webkit-appearance: none; }
+        #driver-search::placeholder { color: #71717a; }
+
+        #modal-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .sel-row { display: flex; align-items: center; gap: 12px; padding: 15px 14px; border-bottom: 1px solid #27272a; cursor: pointer; user-select: none; -webkit-user-select: none; }
+        .sel-row:active { background: #27272a; }
+        .sel-row.selected { background: rgba(225,6,0,0.10); }
+        .sel-check { width: 28px; height: 28px; border-radius: 8px; border: 2px solid #52525b; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.12s, border-color 0.12s; }
+        .sel-row.selected .sel-check { background: #e10600; border-color: #e10600; }
+        .check-icon { display: none; }
+        .sel-row.selected .check-icon { display: block; }
+        .sel-name { font-size: 15px; font-weight: 500; line-height: 1.3; }
+        .sel-team { font-size: 12px; color: #a1a1aa; margin-top: 2px; }
+        .sel-pts { font-size: 13px; font-weight: 700; color: #e10600; flex-shrink: 0; }
+
+        #modal-footer { flex-shrink: 0; padding: 11px 14px; background: #000; border-top: 1px solid #27272a; display: flex; gap: 9px; align-items: center; }
+        #footer-count { flex: 1; background: #27272a; border-radius: 10px; padding: 10px 12px; font-size: 13px; font-weight: 600; text-align: center; color: #a1a1aa; }
+        #save-btn { flex: 2; background: #e10600; border: none; color: #fff; border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; }
+        #save-btn:active { background: #b91c1c; }
+
+        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(90px); background: #27272a; border: 1px solid #3f3f46; color: #fff; padding: 11px 20px; border-radius: 20px; font-size: 14px; font-weight: 500; z-index: 200; transition: transform 0.28s ease; white-space: nowrap; pointer-events: none; }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+
+        #sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #52525b; display: inline-block; margin-right: 5px; transition: background 0.3s; flex-shrink: 0; }
+        #sync-dot.live { background: #16a34a; box-shadow: 0 0 6px #16a34a; }
+        #sync-dot.saving { background: #f59e0b; }
+        #sync-dot.error { background: #e10600; }
+        #sync-label { font-size: 10px; color: #71717a; }
+
+        #sync-bar { flex-shrink: 0; background: #000; border-bottom: 1px solid #27272a; padding: 5px 16px; display: flex; align-items: center; gap: 6px; }
+
+        .action-link:active { color: #fff; }
+        .info-bar { background: #27272a; border-radius: 12px; padding: 12px 14px; text-align: center; margin-top: 10px; }
+        .info-bar p { font-size: 12px; color: #a1a1aa; margin: 0; }
+        .info-bar p + p { margin-top: 4px; color: #71717a; }
+
+        .race-card { background: #27272a; border-radius: 14px; margin-bottom: 9px; overflow: hidden; }
+        .race-header { display: flex; align-items: center; gap: 11px; padding: 13px 14px; cursor: pointer; }
+        .race-header:active { background: #3f3f46; }
+        .race-flag { font-size: 24px; flex-shrink: 0; }
+        .race-name { font-size: 15px; font-weight: 700; line-height: 1.2; }
+        .race-date { font-size: 11px; color: #71717a; margin-top: 2px; }
+        .race-chevron { margin-left: auto; color: #71717a; font-size: 16px; transition: transform 0.2s; flex-shrink: 0; }
+        .race-card.open .race-chevron { transform: rotate(180deg); }
+        .race-body { display: none; border-top: 1px solid #3f3f46; }
+        .race-card.open .race-body { display: block; }
+        .race-row { display: flex; align-items: center; padding: 10px 14px; border-bottom: 1px solid #3f3f46; }
+        .race-row:last-child { border-bottom: none; }
+        .race-pos { width: 22px; font-size: 12px; color: #71717a; font-weight: 600; flex-shrink: 0; }
+        .race-player { flex: 1; font-size: 14px; font-weight: 600; }
+        .race-pts { font-size: 16px; font-weight: 800; color: #e10600; }
+        .race-pts.zero { color: #52525b; }
+        .race-breakdown { font-size: 11px; color: #71717a; margin-top: 1px; }
+        .loading-races { padding: 40px; text-align: center; color: #71717a; font-size: 14px; }
+
+        #countdown-banner { flex-shrink: 0; background: linear-gradient(90deg,#1a0000,#2d0000); border-bottom: 1px solid #3f0000; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        #countdown-banner:active { background: #1f0000; }
+        .cd-label { font-size: 10px; font-weight: 700; color: #e10600; letter-spacing: 0.8px; text-transform: uppercase; }
+        .cd-race { font-size: 13px; font-weight: 700; color: #fff; margin-top: 1px; }
+        .cd-time { font-size: 20px; font-weight: 800; color: #fff; font-family: 'Roboto Mono', monospace; flex-shrink: 0; }
+        .cd-days { font-size: 10px; color: #a1a1aa; text-align: right; margin-top: 1px; }
+
+        .sched-card { background: #27272a; border-radius: 14px; padding: 13px 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .sched-card.past { opacity: 0.45; }
+        .sched-card.next { border: 1px solid #e10600; background: rgba(225,6,0,0.08); }
+        .sched-flag { font-size: 26px; flex-shrink: 0; width: 36px; text-align: center; }
+        .sched-round { font-size: 10px; color: #71717a; font-weight: 700; }
+        .sched-name { font-size: 14px; font-weight: 700; line-height: 1.3; }
+        .sched-circuit { font-size: 11px; color: #a1a1aa; margin-top: 1px; }
+        .sched-date { text-align: right; flex-shrink: 0; }
+        .sched-date-str { font-size: 12px; font-weight: 600; color: #fff; }
+        .sched-sprint { font-size: 10px; color: #e10600; font-weight: 700; margin-top: 2px; }
+        .sched-done { font-size: 11px; color: #16a34a; font-weight: 700; margin-top: 2px; }
+
+        .trade-section-title { font-size: 12px; font-weight: 700; color: #71717a; letter-spacing: 0.8px; text-transform: uppercase; margin: 18px 0 8px; }
+        .trade-card { background: #27272a; border-radius: 14px; padding: 14px; margin-bottom: 9px; }
+        .trade-card.pending { border: 1px solid #854d0e; background: rgba(133,77,14,0.15); }
+        .trade-card.accepted { border: 1px solid #166534; background: rgba(22,101,52,0.12); }
+        .trade-card.declined { border: 1px solid #3f3f46; opacity: 0.5; }
+        .trade-players { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .trade-player-box { flex: 1; background: #18181b; border-radius: 10px; padding: 9px 11px; }
+        .trade-player-box .tpb-name { font-size: 11px; color: #71717a; font-weight: 600; margin-bottom: 3px; }
+        .trade-player-box .tpb-driver { font-size: 14px; font-weight: 700; line-height: 1.3; }
+        .trade-arrow { font-size: 18px; flex-shrink: 0; color: #71717a; }
+        .trade-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-right: 6px; }
+        .trade-badge.pending { background: #78350f; color: #fbbf24; }
+        .trade-badge.accepted { background: #14532d; color: #86efac; }
+        .trade-badge.declined { background: #27272a; color: #71717a; }
+        .trade-actions { display: flex; gap: 8px; }
+        .trade-btn { flex: 1; padding: 10px; border-radius: 10px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .trade-btn.accept { background: #16a34a; color: #fff; }
+        .trade-btn.accept:active { background: #15803d; }
+        .trade-btn.decline { background: #3f3f46; color: #fff; }
+        .trade-btn.decline:active { background: #52525b; }
+
+        #trade-modal { position: fixed; inset: 0; z-index: 150; display: none; flex-direction: column; background: #18181b; }
+        #trade-modal.open { display: flex; }
+        .trade-modal-header { flex-shrink: 0; background: #000; padding: 13px 14px; display: flex; align-items: center; gap: 11px; border-bottom: 1px solid #27272a; }
+        .trade-picker-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .trade-pick-row { display: flex; align-items: center; gap: 12px; padding: 14px; border-bottom: 1px solid #27272a; cursor: pointer; }
+        .trade-pick-row:active { background: #27272a; }
+        .trade-pick-row.selected { background: rgba(225,6,0,0.10); }
+        .trade-pick-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #52525b; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .trade-pick-row.selected .trade-pick-dot { background: #e10600; border-color: #e10600; }
+        .trade-pick-dot-inner { width: 8px; height: 8px; background: #fff; border-radius: 50%; display: none; }
+        .trade-pick-row.selected .trade-pick-dot-inner { display: block; }
+        .trade-modal-footer { flex-shrink: 0; padding: 12px 14px; background: #000; border-top: 1px solid #27272a; }
+        .trade-next-btn { width: 100%; padding: 14px; background: #e10600; border: none; color: #fff; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; }
+        .trade-next-btn:disabled { background: #3f3f46; color: #71717a; cursor: not-allowed; }
+        .trade-next-btn:not(:disabled):active { background: #b91c1c; }
+        .trade-summary-box { background: #27272a; border-radius: 12px; padding: 14px; margin: 14px; }
+        .new-propose-btn { width: 100%; padding: 14px; background: #27272a; border: none; color: #fff; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 4px; border: 1px dashed #52525b; }
+        .new-propose-btn:active { background: #3f3f46; }
+    </style>
+</head>
+<body>
+<div id="app">
+
+    <div id="header">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;background:#e10600;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏎️</div>
+            <div>
+                <h1>F1 FRIENDS</h1>
+                <p>FANTASY 2026</p>
+            </div>
+        </div>
+        <button id="refresh-btn" onclick="refreshData()">
+            <span id="refresh-text">REFRESH</span>
+            <span>🔄</span>
+        </button>
+    </div>
+
+    <div id="countdown-banner" onclick="switchTab(4)">
+        <div>
+            <div class="cd-label">🏁 Next Race</div>
+            <div class="cd-race" id="cd-race-name">Loading...</div>
+        </div>
+        <div>
+            <div class="cd-time" id="cd-time">--d --h</div>
+            <div class="cd-days" id="cd-sprint-flag"></div>
+        </div>
+    </div>
+
+    <div id="sync-bar">
+        <span id="sync-dot"></span>
+        <span id="sync-label">Connecting...</span>
+    </div>
+
+    <div id="tabs">
+        <button class="tab-btn active" id="tab-0" onclick="switchTab(0)">STANDINGS</button>
+        <button class="tab-btn" id="tab-1" onclick="switchTab(1)">BY RACE</button>
+        <button class="tab-btn" id="tab-2" onclick="switchTab(2)">TRADES</button>
+        <button class="tab-btn" id="tab-3" onclick="switchTab(3)">TEAMS</button>
+        <button class="tab-btn" id="tab-4" onclick="switchTab(4)">CALENDAR</button>
+    </div>
+
+    <div id="screens">
+        <div class="screen active" id="screen-0">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:13px;">
+                <span style="font-size:18px;font-weight:700;">Standings</span>
+                <span id="last-updated" class="mono" style="font-size:11px;color:#71717a;"></span>
+            </div>
+            <div id="leaderboard"></div>
+            <div class="info-bar">
+                <p>Points from all 2026 races so far</p>
+                <p>Driver pts + Constructor pts</p>
+            </div>
+        </div>
+
+        <div class="screen" id="screen-1">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:13px;">
+                <span style="font-size:18px;font-weight:700;">By Race</span>
+                <span id="races-status" style="font-size:11px;color:#71717a;"></span>
+            </div>
+            <div id="race-list"><div class="loading-races">Loading race data...</div></div>
+        </div>
+
+        <div class="screen" id="screen-2">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                <span style="font-size:18px;font-weight:700;">Trades</span>
+            </div>
+            <button class="new-propose-btn" onclick="openTradeModal()">➕ Propose a new trade</button>
+            <div id="trade-list"></div>
+        </div>
+
+        <div class="screen" id="screen-3">
+            <div style="font-size:18px;font-weight:700;margin-bottom:13px;">Your 5 Friends</div>
+            <div id="player-list"></div>
+            <div style="margin-top:8px;">
+                <div class="action-link" onclick="resetToDefaults()" style="color:#ef4444;">⚠️ Reset all teams to default</div>
+            </div>
+            <div style="margin-top:16px;background:#27272a;border-radius:14px;padding:14px;">
+                <div style="font-size:12px;font-weight:700;color:#16a34a;letter-spacing:0.8px;margin-bottom:6px;">☁️ CLOUD SYNC ACTIVE</div>
+                <div style="font-size:12px;color:#a1a1aa;line-height:1.6;">All changes save automatically to the cloud and sync live to everyone. No more import/export needed!</div>
+            </div>
+        </div>
+
+        <div class="screen" id="screen-4">
+            <div style="font-size:18px;font-weight:700;margin-bottom:13px;">2026 Calendar</div>
+            <div id="schedule-list"></div>
+        </div>
+    </div>
+</div>
+
+<!-- FULL-SCREEN EDIT MODAL -->
+<div id="modal-overlay">
+    <div id="modal-header">
+        <button id="modal-back" onclick="closeModal()">←</button>
+        <div>
+     
