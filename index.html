@@ -17,8 +17,62 @@
     <meta name="theme-color" content="#000000">
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23111111'/%3E%3Ccircle cx='256' cy='256' r='180' fill='%23e10600' fill-opacity='0.1'/%3E%3Ctext x='256' y='310' font-family='system-ui' font-size='260' text-anchor='middle' dominant-baseline='middle' fill='%23ffffff'%3E%F0%9F%8F%8E%EF%B8%8F%3C/text%3E%3C/svg%3E">
 
-    <script src="https://cdn.tailwindcss.com/3.4.1"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script>
+// SUPABASE SETUP
+const SUPABASE_URL = "https://bnhyybufxbwsgbroehct.supabase.co"
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJuaHl5YnVmeGJ3c2dicm9laGN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2OTY4MjksImV4cCI6MjA5MDI3MjgyOX0.viW_k7NET9a6-nXpNOn_M4m_cOl6T9hNTfqaLvNXql8"
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+const DB_ROW_ID = 1
+
+function setSyncStatus(status, text) {
+    const dot = document.getElementById("sync-dot") || {classList:{add:()=>{}}};
+    const lbl = document.getElementById("sync-label") || {textContent:""};
+    dot.className = "";
+    dot.classList.add(status);
+    lbl.textContent = text;
+}
+
+// Minimal defaults so you see something
+const DEFAULT_PLAYERS = [
+    { name: "Vicky",  driversIds: ["oscar_piastri", "lando_norris"], teamsIds: ["mclaren", "mercedes"] },
+    { name: "Dan",    driversIds: ["max_verstappen"], teamsIds: ["red_bull"] },
+    { name: "Damian", driversIds: ["charles_leclerc"], teamsIds: ["ferrari"] },
+    { name: "Sanne",  driversIds: ["george_russell"], teamsIds: ["mercedes"] },
+    { name: "Kids",   driversIds: ["lance_stroll"], teamsIds: ["aston_martin"] }
+];
+
+let players = JSON.parse(JSON.stringify(DEFAULT_PLAYERS));
+let trades = [];
+
+function normaliseIds() {} // placeholder
+
+function renderEverything() {
+    const lb = document.getElementById("leaderboard");
+    if (lb) lb.innerHTML = "<div style='padding:20px;color:#fff;text-align:center;'>Default teams loaded (5 players)<br><br>Supabase connection still pending</div>";
+}
+
+function refreshData() {
+    alert("Refresh clicked — data should now appear if Supabase works");
+    renderEverything();
+}
+
+function switchTab(tab) {
+    document.querySelectorAll(".tab-btn").forEach((b,i) => b.classList.toggle("active", i===tab));
+    document.querySelectorAll(".screen").forEach((s,i) => s.classList.toggle("active", i===tab));
+}
+
+// Simple load function
+async function startApp() {
+    setSyncStatus("live", "Using default data");
+    renderEverything();
+    showToast = (msg) => alert(msg); // simple toast
+    showToast(" Default teams loaded — check Standings tab");
+}
+
+function showToast(msg) { alert(msg); }
+
+window.addEventListener("load", startApp);
+</script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
