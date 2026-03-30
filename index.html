@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#000000">
-    <title>F1 Friends Fantasy 2026 </title>
+    <title>F1 Friends Fantasy 2026 🏎️</title>
     <script src="https://cdn.tailwindcss.com/3.4.1"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
@@ -206,7 +206,7 @@
 
     <div id="header">
         <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:36px;height:36px;background:#e10600;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;"></div>
+            <div style="width:36px;height:36px;background:#e10600;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏎️</div>
             <div>
                 <h1>F1 FRIENDS</h1>
                 <p>FANTASY 2026</p>
@@ -214,13 +214,13 @@
         </div>
         <button id="refresh-btn" onclick="refreshData()">
             <span id="refresh-text">REFRESH</span>
-            <span></span>
+            <span>🔄</span>
         </button>
     </div>
 
     <div id="countdown-banner" onclick="switchTab(4)">
         <div>
-            <div class="cd-label"> Next Race</div>
+            <div class="cd-label">🏁 Next Race</div>
             <div class="cd-race" id="cd-race-name">Loading...</div>
         </div>
         <div>
@@ -267,7 +267,7 @@
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
                 <span style="font-size:18px;font-weight:700;">Trades</span>
             </div>
-            <button class="new-propose-btn" onclick="openTradeModal()"> Propose a new trade</button>
+            <button class="new-propose-btn" onclick="openTradeModal()">➕ Propose a new trade</button>
             <div id="trade-list"></div>
         </div>
 
@@ -275,10 +275,10 @@
             <div style="font-size:18px;font-weight:700;margin-bottom:13px;">Your 5 Friends</div>
             <div id="player-list"></div>
             <div style="margin-top:8px;">
-                <div class="action-link" onclick="resetToDefaults()" style="color:#ef4444;"> Reset all teams to default</div>
+                <div class="action-link" onclick="resetToDefaults()" style="color:#ef4444;">⚠️ Reset all teams to default</div>
             </div>
             <div style="margin-top:16px;background:#27272a;border-radius:14px;padding:14px;">
-                <div style="font-size:12px;font-weight:700;color:#16a34a;letter-spacing:0.8px;margin-bottom:6px;"> CLOUD SYNC ACTIVE</div>
+                <div style="font-size:12px;font-weight:700;color:#16a34a;letter-spacing:0.8px;margin-bottom:6px;">☁️ CLOUD SYNC ACTIVE</div>
                 <div style="font-size:12px;color:#a1a1aa;line-height:1.6;">All changes save automatically to the cloud and sync live to everyone. No more import/export needed!</div>
             </div>
         </div>
@@ -296,7 +296,7 @@
 <div id="modal-overlay">
 
     <div id="modal-header">
-        <button id="modal-back" onclick="closeModal()"></button>
+        <button id="modal-back" onclick="closeModal()">←</button>
         <div>
             <div id="modal-title">Edit Team</div>
             <div id="modal-subtitle"></div>
@@ -313,14 +313,14 @@
     </div>
 
     <div id="search-wrap">
-        <input id="driver-search" type="search" placeholder="  Search drivers or teams..." oninput="filterList()" autocomplete="off" spellcheck="false">
+        <input id="driver-search" type="search" placeholder="🔍  Search drivers or teams..." oninput="filterList()" autocomplete="off" spellcheck="false">
     </div>
 
     <div id="modal-list"></div>
 
     <div id="modal-footer">
         <div id="footer-count">0 / 5 drivers</div>
-        <button id="save-btn" onclick="savePlayerSelections()">SAVE TEAM </button>
+        <button id="save-btn" onclick="savePlayerSelections()">SAVE TEAM ✓</button>
     </div>
 
 </div>
@@ -328,7 +328,7 @@
 <!-- TRADE PROPOSE MODAL -->
 <div id="trade-modal">
     <div class="trade-modal-header">
-        <button id="modal-back" style="background:#27272a;border:none;color:#fff;border-radius:10px;width:38px;height:38px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onclick="closeTradeModal()"></button>
+        <button id="modal-back" style="background:#27272a;border:none;color:#fff;border-radius:10px;width:38px;height:38px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onclick="closeTradeModal()">←</button>
         <div>
             <div id="trade-modal-title" style="font-size:17px;font-weight:700;">Propose Trade</div>
             <div id="trade-modal-sub" style="font-size:12px;color:#71717a;margin-top:2px;">Step 1 of 4</div>
@@ -336,7 +336,7 @@
     </div>
     <div id="trade-modal-body" style="flex:1;display:flex;flex-direction:column;overflow:hidden;"></div>
     <div class="trade-modal-footer">
-        <button class="trade-next-btn" id="trade-next-btn" onclick="tradeNext()" disabled>Next </button>
+        <button class="trade-next-btn" id="trade-next-btn" onclick="tradeNext()" disabled>Next →</button>
     </div>
 </div>
 
@@ -345,7 +345,7 @@
 <div id="toast"></div>
 
 <script>
-    //  SUPABASE SETUP 
+    // ── SUPABASE SETUP ────────────────────────────────────────────────────────
     const SUPABASE_URL = "https://bnhyybufxbwsgbroehct.supabase.co"
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJuaHl5YnVmeGJ3c2dicm9laGN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2OTY4MjksImV4cCI6MjA5MDI3MjgyOX0.viW_k7NET9a6-nXpNOn_M4m_cOl6T9hNTfqaLvNXql8"
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
@@ -359,7 +359,7 @@
         lbl.textContent = text
     }
 
-    //  Load from Supabase 
+    // ── Load from Supabase ────────────────────────────────────────────────────
     function mergeWithDefaults(savedPlayers) {
         // For each player, use Supabase driversIds/teamsIds only if they look valid.
         // Otherwise fall back to DEFAULT_PLAYERS. This means wiped Supabase data
@@ -393,19 +393,19 @@
                 normaliseIds()
                 trades = data.trades || []
             }
-            setSyncStatus("live", "Live � synced")
+            setSyncStatus("live", "Live — synced")
             return true
         } catch(e) {
             const msg = e && e.message ? e.message : String(e)
             if (!msg.includes("DataCloneError") && !msg.includes("Failed to fetch") && !msg.includes("NetworkError")) {
                 console.warn("Supabase load failed:", msg)
             }
-            setSyncStatus("error", "Offline � using local data")
+            setSyncStatus("error", "Offline — using local data")
             return false
         }
     }
 
-    //  Save to Supabase 
+    // ── Save to Supabase ──────────────────────────────────────────────────────
     async function saveToSupabase() {
         // Always save to localStorage first as reliable fallback
         try { localStorage.setItem("f1Fantasy2026", JSON.stringify({ players })) } catch {}
@@ -427,15 +427,15 @@
             // Data is already safe in localStorage above
             const msg = e && e.message ? e.message : String(e)
             if (msg.includes("DataCloneError") || msg.includes("Failed to fetch") || msg.includes("NetworkError")) {
-                setSyncStatus("error", "Offline � saved locally")
+                setSyncStatus("error", "Offline — saved locally")
             } else {
                 console.warn("Supabase save failed:", msg)
-                setSyncStatus("error", "Save failed � using local backup")
+                setSyncStatus("error", "Save failed — using local backup")
             }
         }
     }
 
-    //  Polling sync (replaces real-time subscription) 
+    // ── Polling sync (replaces real-time subscription) ──────────────────────
     // Real-time was firing immediately with stale/wiped Supabase snapshots.
     // Simple 30-second poll is safer and sufficient for a fantasy app.
     function subscribeToRealtime() {
@@ -458,15 +458,15 @@
                     trades = data.trades || []
                     renderEverything()
                     renderTradeTab()
-                    setSyncStatus("live", "Live � just updated ")
-                    setTimeout(() => setSyncStatus("live", "Live � synced"), 2000)
+                    setSyncStatus("live", "Live — just updated 🔄")
+                    setTimeout(() => setSyncStatus("live", "Live — synced"), 2000)
                 }
             } catch(e) {}
         }, 30000)
-        setSyncStatus("live", "Live � synced")
+        setSyncStatus("live", "Live — synced")
     }
 
-    //  GLOBAL STATE 
+    // ── GLOBAL STATE ──────────────────────────────────────────────────────────
     let driversData = {}, constructorsData = {}
     let allDriversList = [], allConstructorsList = []
     let players = []
@@ -505,7 +505,7 @@
             try { localStorage.removeItem("f1Fantasy2026_trades") } catch {}
             renderEverything()
             renderTradeTab()
-            showToast("Teams reset to defaults ")
+            showToast("Teams reset to defaults ✓")
         }
     }
 
@@ -585,7 +585,7 @@
         { id: "liam_lawson",           name: "Liam Lawson",       team: "Racing Bulls",    points: 12 },
         { id: "arvid_lindblad",        name: "Arvid Lindblad",    team: "Racing Bulls",    points: 4 },
         // Audi
-        { id: "nico_hulkenberg",       name: "Nico H�lkenberg",   team: "Audi",            points: 0 },
+        { id: "nico_hulkenberg",       name: "Nico Hülkenberg",   team: "Audi",            points: 0 },
         { id: "gabriel_bortoleto",     name: "Gabriel Bortoleto", team: "Audi",            points: 2 },
         // Williams
         { id: "carlos_sainz",          name: "Carlos Sainz",      team: "Williams",        points: 2 },
@@ -594,7 +594,7 @@
         { id: "fernando_alonso",       name: "Fernando Alonso",   team: "Aston Martin",    points: 0 },
         { id: "lance_stroll",          name: "Lance Stroll",      team: "Aston Martin",    points: 0 },
         // Cadillac
-        { id: "sergio_perez",          name: "Sergio P�rez",      team: "Cadillac",        points: 0 },
+        { id: "sergio_perez",          name: "Sergio Pérez",      team: "Cadillac",        points: 0 },
         { id: "valtteri_bottas",       name: "Valtteri Bottas",   team: "Cadillac",        points: 0 },
     ]
     const FALLBACK_CONSTRUCTORS = [
@@ -650,14 +650,14 @@
                 allDriversList.sort((a,b)=>b.points-a.points)
                 allConstructorsList.sort((a,b)=>b.points-a.points)
                 document.getElementById("last-updated").textContent = new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})
-                showToast("Live data updated ")
+                showToast("Live data updated ✓")
             } else {
                 document.getElementById("last-updated").textContent = "Pre-season"
-                showToast("2026 roster loaded � season not started")
+                showToast("2026 roster loaded — season not started")
             }
         } catch {
             document.getElementById("last-updated").textContent = "Offline"
-            showToast("Offline � showing 2026 roster")
+            showToast("Offline — showing 2026 roster")
         }
         document.getElementById("refresh-text").textContent = "REFRESH"
         renderEverything()
@@ -717,17 +717,17 @@
             var i = item.i, name = item.name, score = item.score, driverPts = item.driverPts, constructorPts = item.constructorPts, bonusPts = item.bonusPts
             var p = players[i]
             var rc = rank===0?"gold":rank===1?"silver":rank===2?"bronze":""
-            var medal = rank===0?"":rank===1?"":rank===2?"":String(rank+1)
+            var medal = rank===0?"🥇":rank===1?"🥈":rank===2?"🥉":String(rank+1)
             var driverNames = p.driversIds.map(function(id) {
                 var nid = ID_MAP[id]||id
                 var fd = FALLBACK_DRIVERS.find(function(f){ return f.id===nid })
                 return fd ? fd.name.split(" ").pop() : nid.split("_").map(function(w){ return w[0].toUpperCase()+w.slice(1) }).join(" ")
-            }).join(" � ")
+            }).join(" · ")
             var teamNames = p.teamsIds.map(function(id) {
                 var nid = ID_MAP[id]||id
                 return CNAMES[nid] || nid
-            }).join(" � ")
-            var bonusPill = bonusPts > 0 ? "<span style=\"" + pillStyle + "\"><span style=\"color:#a1a1aa;\"></span><span style=\"color:#fbbf24;\">" + bonusPts + "</span></span>" : ""
+            }).join(" · ")
+            var bonusPill = bonusPts > 0 ? "<span style=\"" + pillStyle + "\"><span style=\"color:#a1a1aa;\">⚡</span><span style=\"color:#fbbf24;\">" + bonusPts + "</span></span>" : ""
             var div = document.createElement("div")
             div.className = "lb-card"
             div.style.alignItems = "flex-start"
@@ -738,8 +738,8 @@
                     "<div style=\"font-size:11px;color:#a1a1aa;margin-top:3px;line-height:1.5;\">" + driverNames + "</div>" +
                     "<div style=\"font-size:11px;color:#71717a;margin-top:1px;\">" + teamNames + "</div>" +
                     "<div style=\"display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;\">" +
-                        "<span style=\"" + pillStyle + "\"><span style=\"color:#a1a1aa;\"></span><span style=\"color:#fff;\">" + driverPts + "</span></span>" +
-                        "<span style=\"" + pillStyle + "\"><span style=\"color:#a1a1aa;\"></span><span style=\"color:#fff;\">" + constructorPts + "</span></span>" +
+                        "<span style=\"" + pillStyle + "\"><span style=\"color:#a1a1aa;\">🏎️</span><span style=\"color:#fff;\">" + driverPts + "</span></span>" +
+                        "<span style=\"" + pillStyle + "\"><span style=\"color:#a1a1aa;\">🏭</span><span style=\"color:#fff;\">" + constructorPts + "</span></span>" +
                         bonusPill +
                     "</div>" +
                 "</div>" +
@@ -813,10 +813,10 @@
             const score = calcScore(i)
             const div = document.createElement("div"); div.className = "player-card"
             div.innerHTML = `
-                <button class="rename-btn" onclick="renamePlayer(${i})"></button>
+                <button class="rename-btn" onclick="renamePlayer(${i})">✏️</button>
                 <div style="flex:1;min-width:0;">
                     <div class="player-name">${player.name}</div>
-                    <div class="player-meta">${player.driversIds.length}/${player.name==="Kids"?2:5} drivers � ${player.teamsIds.length}/${player.name==="Kids"?3:2} constructors</div>
+                    <div class="player-meta">${player.driversIds.length}/${player.name==="Kids"?2:5} drivers · ${player.teamsIds.length}/${player.name==="Kids"?3:2} constructors</div>
                 </div>
                 <div class="mono" style="font-size:24px;font-weight:800;flex-shrink:0;margin-right:4px;">${score}</div>
                 <button class="edit-btn" onclick="editPlayer(${i})">EDIT</button>`
@@ -880,7 +880,7 @@
                         <div class="sel-name">${driver.name}</div>
                         <div class="sel-team">${driver.team}</div>
                     </div>
-                    <div class="sel-pts mono">${driver.points > 0 ? driver.points+'pts' : '�'}</div>`
+                    <div class="sel-pts mono">${driver.points > 0 ? driver.points+'pts' : '—'}</div>`
                 row.addEventListener("click", () => toggleDriver(driver.id))
                 container.appendChild(row)
             })
@@ -893,7 +893,7 @@
                     <div style="flex:1;min-width:0;">
                         <div class="sel-name">${team.name}</div>
                     </div>
-                    <div class="sel-pts mono">${team.points > 0 ? team.points+'pts' : '�'}</div>`
+                    <div class="sel-pts mono">${team.points > 0 ? team.points+'pts' : '—'}</div>`
                 row.addEventListener("click", () => toggleTeam(team.id))
                 container.appendChild(row)
             })
@@ -905,7 +905,7 @@
         if (player.driversIds.includes(id)) {
             player.driversIds = player.driversIds.filter(x => x !== id)
         } else {
-            if (player.driversIds.length >= getLimits(currentEditingPlayerIndex).maxDrivers) { showToast("Max " + getLimits(currentEditingPlayerIndex).maxDrivers + " drivers � deselect one first"); return }
+            if (player.driversIds.length >= getLimits(currentEditingPlayerIndex).maxDrivers) { showToast("Max " + getLimits(currentEditingPlayerIndex).maxDrivers + " drivers — deselect one first"); return }
             player.driversIds.push(id)
         }
         renderModalList(); updateCounts()
@@ -916,7 +916,7 @@
         if (player.teamsIds.includes(id)) {
             player.teamsIds = player.teamsIds.filter(x => x !== id)
         } else {
-            if (player.teamsIds.length >= getLimits(currentEditingPlayerIndex).maxTeams) { showToast("Max " + getLimits(currentEditingPlayerIndex).maxTeams + " constructors � deselect one first"); return }
+            if (player.teamsIds.length >= getLimits(currentEditingPlayerIndex).maxTeams) { showToast("Max " + getLimits(currentEditingPlayerIndex).maxTeams + " constructors — deselect one first"); return }
             player.teamsIds.push(id)
         }
         renderModalList(); updateCounts()
@@ -936,7 +936,7 @@
         const lim3 = getLimits(currentEditingPlayerIndex)
         if (p.driversIds.length !== lim3.maxDrivers) { showToast("Need exactly "+lim3.maxDrivers+" drivers ("+p.driversIds.length+"/"+lim3.maxDrivers+")"); switchModalTab(0); return }
         if (p.teamsIds.length !== lim3.maxTeams) { showToast("Need exactly "+lim3.maxTeams+" constructors ("+p.teamsIds.length+"/"+lim3.maxTeams+")"); switchModalTab(1); return }
-        closeModal(); saveToStorage(); renderEverything(); showToast("Team saved ")
+        closeModal(); saveToStorage(); renderEverything(); showToast("Team saved ✓")
     }
 
     function renamePlayer(index) {
@@ -951,21 +951,21 @@
     }
 
     // Export/import replaced by Supabase real-time sync
-    function exportData() { showToast(" Data syncs automatically � no export needed!") }
-    function importData() { showToast(" Data syncs automatically � no import needed!") }
+    function exportData() { showToast("☁️ Data syncs automatically — no export needed!") }
+    function importData() { showToast("☁️ Data syncs automatically — no import needed!") }
 
     // quickImport replaced by Supabase
-    function quickImport() { showToast(" Data syncs automatically � no import needed!") }
+    function quickImport() { showToast("☁️ Data syncs automatically — no import needed!") }
 
     function refreshData() { fetchF1Data(); fetchRaceData() }
 
-    //  Race-by-race data 
-    // Hardcoded race results: driverId  points earned that race
+    // ── Race-by-race data ─────────────────────────────────────────────────────
+    // Hardcoded race results: driverId → points earned that race
     const RACE_RESULTS = [
         {
             round: 1,
             name: "Australian Grand Prix",
-            flag: "",
+            flag: "🇦🇺",
             date: "8 Mar 2026",
             drivers: {
                 george_russell: 25, andrea_kimi_antonelli: 18, charles_leclerc: 15,
@@ -983,7 +983,7 @@
         {
             round: 2,
             name: "Chinese Grand Prix",
-            flag: "",
+            flag: "🇨🇳",
             date: "15 Mar 2026",
             drivers: {
                 andrea_kimi_antonelli: 26, george_russell: 18, lewis_hamilton: 15,
@@ -1007,7 +1007,7 @@
         {
             round: 3,
             name: "Japanese Grand Prix",
-            flag: "",
+            flag: "🇯🇵",
             date: "29 Mar 2026",
             drivers: {
                 andrea_kimi_antonelli: 25, oscar_piastri: 18, charles_leclerc: 15,
@@ -1052,14 +1052,14 @@
                         }
                     })
                     const countryFlags = {
-                        "Australia": "", "Bahrain": "", "Saudi Arabia": "", "Japan": "",
-                        "China": "", "Miami": "", "Emilia Romagna": "", "Monaco": "",
-                        "Spain": "", "Canada": "", "Austria": "", "Great Britain": "",
-                        "Hungary": "", "Belgium": "", "Netherlands": "", "Italy": "",
-                        "Azerbaijan": "", "Singapore": "", "United States": "", "Mexico": "",
-                        "Brazil": "", "Las Vegas": "", "Qatar": "", "Abu Dhabi": ""
+                        "Australia": "🇦🇺", "Bahrain": "🇧🇭", "Saudi Arabia": "🇸🇦", "Japan": "🇯🇵",
+                        "China": "🇨🇳", "Miami": "🇺🇸", "Emilia Romagna": "🇮🇹", "Monaco": "🇲🇨",
+                        "Spain": "🇪🇸", "Canada": "🇨🇦", "Austria": "🇦🇹", "Great Britain": "🇬🇧",
+                        "Hungary": "🇭🇺", "Belgium": "🇧🇪", "Netherlands": "🇳🇱", "Italy": "🇮🇹",
+                        "Azerbaijan": "🇦🇿", "Singapore": "🇸🇬", "United States": "🇺🇸", "Mexico": "🇲🇽",
+                        "Brazil": "🇧🇷", "Las Vegas": "🇺🇸", "Qatar": "🇶🇦", "Abu Dhabi": "🇦🇪"
                     }
-                    const flag = countryFlags[race.Circuit.Location.country] || countryFlags[race.raceName.split(" ")[0]] || ""
+                    const flag = countryFlags[race.Circuit.Location.country] || countryFlags[race.raceName.split(" ")[0]] || "🏁"
                     const dateObj = new Date(race.date)
                     const dateStr = dateObj.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
                     // Calculate constructor pts for this race from driver results
@@ -1139,7 +1139,7 @@
         const container = document.getElementById("race-list")
         container.innerHTML = ""
         if (!races.length) {
-            container.innerHTML = `<div class="loading-races">No race results yet � check back after the first race!</div>`
+            container.innerHTML = `<div class="loading-races">No race results yet — check back after the first race!</div>`
             return
         }
         // Show most recent race first
@@ -1157,9 +1157,9 @@
                     <div class="race-flag">${race.flag}</div>
                     <div>
                         <div class="race-name">${race.name}</div>
-                        <div class="race-date">${race.date}${race.sprintDrivers && Object.keys(race.sprintDrivers).length ? " �  Sprint" : ""} �  ${winner.score > 0 ? winner.name + " ("+winner.score+" pts)" : "No scores yet"}${race.fastestLap ? " � FL: " + (driversData[race.fastestLap]?.name || race.fastestLap).split(" ").pop() : ""}</div>
+                        <div class="race-date">${race.date}${race.sprintDrivers && Object.keys(race.sprintDrivers).length ? " · ⚡ Sprint" : ""} · 🏆 ${winner.score > 0 ? winner.name + " ("+winner.score+" pts)" : "No scores yet"}${race.fastestLap ? " · FL: " + (driversData[race.fastestLap]?.name || race.fastestLap).split(" ").pop() : ""}</div>
                     </div>
-                    <div class="race-chevron"></div>
+                    <div class="race-chevron">▼</div>
                 </div>
                 <div class="race-body">
                     ${scores.map((s, rank) => `
@@ -1167,7 +1167,7 @@
                             <div class="race-pos">${rank+1}</div>
                             <div style="flex:1;min-width:0;">
                                 <div class="race-player">${s.name}</div>
-                                ${s.breakdown.length ? `<div class="race-breakdown">${s.breakdown.join(" � ")}</div>` : `<div class="race-breakdown">No points scored</div>`}
+                                ${s.breakdown.length ? `<div class="race-breakdown">${s.breakdown.join(" · ")}</div>` : `<div class="race-breakdown">No points scored</div>`}
                             </div>
                             <div class="race-pts mono ${s.score===0?'zero':''}">${s.score}</div>
                         </div>`).join("")}
@@ -1183,7 +1183,7 @@
         header.parentElement.classList.toggle("open")
     }
 
-    //  TRADES 
+    // ── TRADES ───────────────────────────────────────────────────────────────
     // Trade structure: { id, fromPlayer, fromDriver, toPlayer, toDriver, status, date, roundAfter }
     // status: 'pending' | 'accepted' | 'declined'
     // roundAfter: races completed at time of trade (used to credit past scores correctly)
@@ -1215,11 +1215,11 @@
         }
 
         if (pending.length) {
-            el.innerHTML += `<div class="trade-section-title"> Pending</div>`
+            el.innerHTML += `<div class="trade-section-title">⏳ Pending</div>`
             pending.forEach(t => el.appendChild(buildTradeCard(t)))
         }
         if (done.length) {
-            el.innerHTML += `<div class="trade-section-title"> History</div>`
+            el.innerHTML += `<div class="trade-section-title">📋 History</div>`
             done.forEach(t => el.appendChild(buildTradeCard(t)))
         }
     }
@@ -1231,7 +1231,7 @@
     function buildTradeCard(t) {
         const card = document.createElement("div")
         card.className = "trade-card " + t.status
-        const badgeLabel = t.status === "pending" ? " Pending" : t.status === "accepted" ? " Accepted" : " Declined"
+        const badgeLabel = t.status === "pending" ? "⏳ Pending" : t.status === "accepted" ? "✅ Accepted" : "❌ Declined"
         card.innerHTML = `
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
                 <span class="trade-badge ${t.status}">${badgeLabel}</span>
@@ -1242,7 +1242,7 @@
                     <div class="tpb-name">${t.fromPlayer} gives</div>
                     <div class="tpb-driver">${driverName(t.fromDriver)}</div>
                 </div>
-                <div class="trade-arrow"></div>
+                <div class="trade-arrow">⇄</div>
                 <div class="trade-player-box">
                     <div class="tpb-name">${t.toPlayer} gives</div>
                     <div class="tpb-driver">${driverName(t.toDriver)}</div>
@@ -1250,10 +1250,10 @@
             </div>
             ${t.status === "pending" ? `
             <div class="trade-actions">
-                <button class="trade-btn accept" onclick="acceptTrade('${t.id}')"> Accept</button>
-                <button class="trade-btn decline" onclick="declineTrade('${t.id}')"> Decline</button>
+                <button class="trade-btn accept" onclick="acceptTrade('${t.id}')">✅ Accept</button>
+                <button class="trade-btn decline" onclick="declineTrade('${t.id}')">❌ Decline</button>
             </div>` : t.status === "accepted" ? `
-            <div style="font-size:11px;color:#71717a;">Trade completed after round ${t.roundAfter ?? "�"}. Points recalculated from next race.</div>` : `
+            <div style="font-size:11px;color:#71717a;">Trade completed after round ${t.roundAfter ?? "—"}. Points recalculated from next race.</div>` : `
             <div style="font-size:11px;color:#71717a;">Trade was declined.</div>`}
         `
         return card
@@ -1286,7 +1286,7 @@
         saveToStorage()
         renderEverything()
         renderTradeTab()
-        showToast("Trade accepted! Teams updated ")
+        showToast("Trade accepted! Teams updated ✓")
     }
 
     function declineTrade(id) {
@@ -1344,7 +1344,7 @@
                 const dName = driverNameMap[nid] || (driversData[nid] ? driversData[nid].name : nid.split("_").map(function(w){ return w[0].toUpperCase()+w.slice(1) }).join(" "))
                 const lastName = dName.split(" ").pop()
                 let label = lastName + " +" + total
-                if (isFastest) label += " "
+                if (isFastest) label += " ⚡"
                 if (sprintPts > 0 && racePts > 0) label += " (race " + racePts + " + sprint " + sprintPts + ")"
                 else if (sprintPts > 0) label += " (sprint)"
                 breakdown.push(label)
@@ -1366,7 +1366,7 @@
         return { score, breakdown }
     }
 
-    //  Trade propose wizard 
+    // ── Trade propose wizard ─────────────────────────────────────────────────
     function openTradeModal() {
         tradeStep = 0
         tradeDraft = {}
@@ -1391,7 +1391,7 @@
         nextBtn.disabled = true
 
         const steps = ["Pick proposer", "Pick their driver", "Pick recipient", "Pick their driver", "Confirm"]
-        document.getElementById("trade-modal-sub").textContent = "Step " + (tradeStep + 1) + " of 5 � " + steps[tradeStep]
+        document.getElementById("trade-modal-sub").textContent = "Step " + (tradeStep + 1) + " of 5 — " + steps[tradeStep]
 
         if (tradeStep === 0) {
             // Pick from-player
@@ -1417,7 +1417,7 @@
                 const row = document.createElement("div"); row.className = "trade-pick-row" + (tradeDraft.fromDriver === id ? " selected" : "")
                 row.innerHTML = `<div class="trade-pick-dot"><div class="trade-pick-dot-inner"></div></div>
                     <div style="flex:1;"><div style="font-size:15px;font-weight:600;">${driverName(id)}</div>
-                    <div style="font-size:12px;color:#a1a1aa;">${driversData[id]?.team || ""} � ${driversData[id]?.points || 0} pts</div></div>`
+                    <div style="font-size:12px;color:#a1a1aa;">${driversData[id]?.team || ""} · ${driversData[id]?.points || 0} pts</div></div>`
                 row.onclick = () => { tradeDraft.fromDriver = id; renderTradeStep() }
                 list.appendChild(row)
             })
@@ -1449,7 +1449,7 @@
                 const row = document.createElement("div"); row.className = "trade-pick-row" + (tradeDraft.toDriver === id ? " selected" : "")
                 row.innerHTML = `<div class="trade-pick-dot"><div class="trade-pick-dot-inner"></div></div>
                     <div style="flex:1;"><div style="font-size:15px;font-weight:600;">${driverName(id)}</div>
-                    <div style="font-size:12px;color:#a1a1aa;">${driversData[id]?.team || ""} � ${driversData[id]?.points || 0} pts</div></div>`
+                    <div style="font-size:12px;color:#a1a1aa;">${driversData[id]?.team || ""} · ${driversData[id]?.points || 0} pts</div></div>`
                 row.onclick = () => { tradeDraft.toDriver = id; renderTradeStep() }
                 list.appendChild(row)
             })
@@ -1460,7 +1460,7 @@
         } else if (tradeStep === 4) {
             // Confirm
             document.getElementById("trade-modal-title").textContent = "Confirm Trade"
-            nextBtn.textContent = "Submit Trade "
+            nextBtn.textContent = "Submit Trade 🤝"
             nextBtn.disabled = false
             body.innerHTML = `
                 <div class="trade-summary-box">
@@ -1470,7 +1470,7 @@
                             <div class="tpb-name">${tradeDraft.fromPlayer} gives</div>
                             <div class="tpb-driver">${driverName(tradeDraft.fromDriver)}</div>
                         </div>
-                        <div class="trade-arrow"></div>
+                        <div class="trade-arrow">⇄</div>
                         <div class="trade-player-box">
                             <div class="tpb-name">${tradeDraft.toPlayer} gives</div>
                             <div class="tpb-driver">${driverName(tradeDraft.toDriver)}</div>
@@ -1500,16 +1500,16 @@
         trades.unshift(trade)
         saveTrades()
         closeTradeModal()
-        document.getElementById("trade-next-btn").textContent = "Next "
+        document.getElementById("trade-next-btn").textContent = "Next →"
         renderTradeTab()
         switchTab(2)
         showToast("Trade proposed! Waiting for " + tradeDraft.toPlayer + " to respond.")
     }
     let latestRaces = []
 
-    //  End TRADES 
+    // ── End TRADES ────────────────────────────────────────────────────────────
 
-    //  CALENDAR & COUNTDOWN 
+    // ── CALENDAR & COUNTDOWN ─────────────────────────────────────────────────
     const CALENDAR_2026 = [
         {
                 "round": 1,
@@ -1711,9 +1711,9 @@
                 </div>
                 <div class="sched-date">
                     <div class="sched-date-str">${dateStr}</div>
-                    ${race.sprint ? '<div class="sched-sprint"> SPRINT</div>' : ''}
-                    ${isPast ? '<div class="sched-done"> Done</div>' : ''}
-                    ${isNext ? '<div style="font-size:10px;color:#e10600;font-weight:700;margin-top:2px;"> NEXT</div>' : ''}
+                    ${race.sprint ? '<div class="sched-sprint">⚡ SPRINT</div>' : ''}
+                    ${isPast ? '<div class="sched-done">✓ Done</div>' : ''}
+                    ${isNext ? '<div style="font-size:10px;color:#e10600;font-weight:700;margin-top:2px;">▶ NEXT</div>' : ''}
                 </div>`
             el.appendChild(div)
         })
@@ -1730,7 +1730,7 @@
         })
         if (!upcoming.length) {
             document.getElementById("cd-race-name").textContent = "Season complete!"
-            document.getElementById("cd-time").textContent = ""
+            document.getElementById("cd-time").textContent = "🏁"
             document.getElementById("cd-sprint-flag").textContent = ""
             return
         }
@@ -1749,13 +1749,13 @@
         } else if (mins > 0) {
             document.getElementById("cd-time").textContent = mins + "m"
         } else {
-            document.getElementById("cd-time").textContent = " NOW"
+            document.getElementById("cd-time").textContent = "🏁 NOW"
         }
-        document.getElementById("cd-sprint-flag").textContent = next.sprint ? " Sprint weekend" : "Race weekend"
+        document.getElementById("cd-sprint-flag").textContent = next.sprint ? "⚡ Sprint weekend" : "Race weekend"
     }
 
-    //  MAP 
-    //  End CALENDAR 
+    // ── MAP ──────────────────────────────────────────────────────────────────
+    // ── End CALENDAR ──────────────────────────────────────────────────────────
 
     // Valid IDs based on current roster
     function getLimits(index) {
@@ -1766,7 +1766,7 @@
 
 
     // Remove any saved driver/constructor IDs that no longer exist in the current roster
-    // cleanupInvalidSelections removed � was incorrectly wiping valid rosters
+    // cleanupInvalidSelections removed — was incorrectly wiping valid rosters
 
     async function startApp() {
         // Load fallback driver/constructor data first so UI isn't blank
@@ -1776,7 +1776,7 @@
         trades = []
 
         // Load trades from localStorage for instant display while Supabase connects
-        // Rosters always come from DEFAULT_PLAYERS � never from localStorage
+        // Rosters always come from DEFAULT_PLAYERS — never from localStorage
         try {
             const savedTrades = localStorage.getItem("f1Fantasy2026_trades")
             if (savedTrades) trades = JSON.parse(savedTrades)
@@ -1790,7 +1790,7 @@
         await loadFromSupabase()
 
         // Rosters always come from DEFAULT_PLAYERS (set in loadFromSupabase safe merge)
-        // No integrity check needed � Supabase can never overwrite driversIds/teamsIds
+        // No integrity check needed — Supabase can never overwrite driversIds/teamsIds
 
         renderEverything()
         renderTradeTab()
